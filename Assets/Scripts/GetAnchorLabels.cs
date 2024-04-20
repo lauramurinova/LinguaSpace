@@ -1,27 +1,40 @@
 using System;
+using Meta.XR.MRUtilityKit;
 using TMPro;
 using UnityEngine;
 
 public class GetAnchorLabels : MonoBehaviour
 {
+    [SerializeField] private GameObject _labelPrefab;
+    
     private OVRSceneManager _ovrSceneManager;
     private OVRSceneRoom _sceneRoom;
-    private OVRScenePlane[] _objects;
 
-    private void Awake()
-    {
-        _ovrSceneManager = FindObjectOfType<OVRSceneManager>();
-        _ovrSceneManager.SceneModelLoadedSuccessfully += SceneLoaded;
-    }
+    private MRUK _mruk;
+    private MRUKRoom _mrukRoom;
 
-    private void SceneLoaded()
+    public void LoadLabels()
     {
-        _sceneRoom = FindObjectOfType<OVRSceneRoom>();
-        _objects = _sceneRoom.Walls;
-        foreach (var wall in _objects)
+        _mruk = GetComponent<MRUK>();
+        _mrukRoom = _mruk.GetCurrentRoom();
+            
+        foreach (var anchor in _mrukRoom.Anchors)
         {
-            Debug.Log("HERE WALL " + wall.name);
-            wall.gameObject.AddComponent<TextMeshPro>().text = "Wall";
+            var label = Instantiate(_labelPrefab, anchor.transform);
+            var text = anchor.GetLabelsAsEnum().ToString();
+            var parts = text.Split('_');
+            text = parts[0];
+            label.GetComponentInChildren<TextMeshProUGUI>().text = text;
+            label.transform.LookAt(Camera.main.transform);
         }
+            
+        // OVRSemanticClassification[] allClassifications = FindObjectsOfType<OVRSemanticClassification>();
+        //
+        // foreach (var classification in allClassifications)
+        // {
+        //     var label = Instantiate(_labelPrefab, classification.transform);
+        //     label.GetComponentInChildren<TextMeshProUGUI>().text = classification.Labels[0];
+        //     label.transform.LookAt(Camera.main.transform);
+        // }
     }
 }
