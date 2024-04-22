@@ -1,11 +1,15 @@
 using System;
+using Meta.WitAi.TTS.Utilities;
 using Meta.XR.MRUtilityKit;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Rendering;
+using UnityEngine.UI;
 
 public class GetAnchorLabels : MonoBehaviour
 {
     [SerializeField] private GameObject _labelPrefab;
+    [SerializeField] private TTSSpeaker _speaker;
     
     private OVRSceneManager _ovrSceneManager;
     private OVRSceneRoom _sceneRoom;
@@ -25,6 +29,7 @@ public class GetAnchorLabels : MonoBehaviour
             var parts = text.Split('_');
             text = parts[0];
             label.GetComponentInChildren<TextMeshProUGUI>().text = text;
+            label.GetComponentInChildren<Button>().onClick.AddListener(delegate { _speaker.Speak(text);});
             label.transform.LookAt(Camera.main.transform);
         }
             
