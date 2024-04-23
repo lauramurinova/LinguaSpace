@@ -8,14 +8,14 @@ public class TranslateObject : MonoBehaviour
     [SerializeField] private Button _button;
     
     private string _name = "";
-    private TranslationManager _translationManager;
+    private TextToSpeechManager _textToSpeechManager;
 
-    public void Initiate(string name, TranslationManager translationManager)
+    public void Initiate(string name, TextToSpeechManager textToSpeechManager)
     {
-        _translationManager = translationManager;
+        _textToSpeechManager = textToSpeechManager;
         _name = name;
         _textLabel.text = name;
-        _button.onClick.AddListener(delegate { _translationManager.Speak(name);});
+        _button.onClick.AddListener(delegate { _textToSpeechManager.Speak(name);});
         transform.LookAt(Camera.main.transform);
     }
 
@@ -24,7 +24,7 @@ public class TranslateObject : MonoBehaviour
         _name = name;
         _textLabel.text = name;
         _button.onClick.RemoveAllListeners();
-        _button.onClick.AddListener(delegate { _translationManager.Speak(name);});
+        _button.onClick.AddListener(delegate { _textToSpeechManager.Speak(name);});
     }
 
     public string GetLabel()
