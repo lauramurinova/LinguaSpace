@@ -14,7 +14,8 @@ public enum TranslateLanguage
 {
     en = 0,
     es = 1,
-    hu = 2
+    hu = 2,
+    sk = 3
 }
 
 public class TranslationManager : MonoBehaviour
@@ -23,6 +24,7 @@ public class TranslationManager : MonoBehaviour
     [SerializeField] private MRUK _mruk;
     [SerializeField] private GameObject _labelPrefab;
     [SerializeField] private TMP_Dropdown _languageDropdown;
+    [SerializeField] private TextToSpeechManager _textToSpeechManager;
 
     private List<TranslateObject> _translateObjects = new List<TranslateObject>();
     private TranslateLanguage _currentLanguage = TranslateLanguage.en;
@@ -42,7 +44,7 @@ public class TranslationManager : MonoBehaviour
             var parts = text.Split('_');
             text = parts[0];
             var label = Instantiate(_labelPrefab, anchor.transform).GetComponent<TranslateObject>();
-            label.Initiate(text, this);
+            label.Initiate(text, _textToSpeechManager);
             _translateObjects.Add(label);
         }
     }
@@ -72,8 +74,6 @@ public class TranslationManager : MonoBehaviour
     public IEnumerator TranslateText(UnityEvent<string> translateEvent, string textToTranslate, TranslateLanguage originLanguage, TranslateLanguage desiredLanguage)
     {
         string url = $"https://translation.googleapis.com/language/translate/v2?key={GetApiKey()}";
-
-        // Create JSON request body
         string jsonRequestBody = "{\"q\":\"" + textToTranslate + "\",\"source\":\"" + originLanguage + "\",\"target\":\"" + desiredLanguage + "\"}";
 
         byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(jsonRequestBody);
@@ -88,15 +88,18 @@ public class TranslationManager : MonoBehaviour
         if (request.result == UnityWebRequest.Result.Success)
         {
             string jsonResponse = request.downloadHandler.text;
-            // Parse JSON response to get translated text
             var translatedText = ParseTranslatedText(jsonResponse);
             translateEvent.Invoke(translatedText);
-            Debug.Log(translatedText);
         }
         else
         {
             Debug.LogError("Translation request failed: " + request.error);
         }
+    }
+
+    public TranslateLanguage GetCurrentLanguage()
+    {
+        return _currentLanguage;
     }
     
     public void OnLanguageDropdownValueChanged(int index)
@@ -115,17 +118,17 @@ public class TranslationManager : MonoBehaviour
         {
             ChangeLanguage(TranslateLanguage.hu);
         }
+        else if (selectedLanguage == "Slovak")
+        {
+            ChangeLanguage(TranslateLanguage.sk);
+        }
     }
 
 
     private string ParseTranslatedText(string jsonResponse)
     {
-        // Parse JSON response using Newtonsoft.Json
         JObject json = JObject.Parse(jsonResponse);
-
-        // Extract translated text
         string translatedText = json["data"]["translations"][0]["translatedText"].Value<string>();
-
         return translatedText;
     }
 
