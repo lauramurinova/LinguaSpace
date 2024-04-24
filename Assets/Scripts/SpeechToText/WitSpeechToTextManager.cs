@@ -4,7 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class VoiceDictator : MonoBehaviour
+public class WitSpeechToTextManager : SpeechToTextManager
 {
     [SerializeField] private AppVoiceExperience _appVoice;
     [SerializeField] private TextMeshProUGUI _voiceText;
@@ -20,7 +20,7 @@ public class VoiceDictator : MonoBehaviour
         });
     }
 
-    public void ActivatePronounciation()
+    public override void StartRecording()
     {
         _appVoice.Activate();
         _voiceButton.GetComponent<Image>().color = Color.green;

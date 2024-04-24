@@ -6,10 +6,9 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 
-public class GoogleSpeechToTextManager : MonoBehaviour
+public class GoogleSpeechToTextManager : SpeechToTextManager
 {
     [Header("Translation")]
-    [SerializeField] private TranslationManager _translationManager;
     [SerializeField] private int _recordingDuration = 2;
     
     [Header("UI")]
@@ -26,7 +25,7 @@ public class GoogleSpeechToTextManager : MonoBehaviour
     /// <summary>
     /// Starts speech recognition.
     /// </summary>
-    public void StartRecording()
+    public override void StartRecording()
     {
         if (_recordingCoroutine != null) return;
         
@@ -82,7 +81,7 @@ public class GoogleSpeechToTextManager : MonoBehaviour
     private IEnumerator RecognizeSpeech(AudioClip audioClip, Action<string> onComplete)
     {
         string jsonRequestBody = "{ \"config\": { \"encoding\": \"LINEAR16\", \"sampleRateHertz\": 44100, \"languageCode\": \""
-                                 + _translationManager.GetCurrentLanguage() + "\", \"enableWordTimeOffsets\": false }, \"audio\": { \"content\": \""
+                                 + AppManager.Instance.GetCurrentLanguage() + "\", \"enableWordTimeOffsets\": false }, \"audio\": { \"content\": \""
                                  + ConvertAudioClipToString(audioClip) + "\" } }";
 
         

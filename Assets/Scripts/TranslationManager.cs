@@ -7,28 +7,14 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Networking;
 
-public enum TranslateLanguage
-{
-    en = 0,
-    es = 1,
-    hu = 2,
-    fr = 3,
-    hr = 4
-}
-
 public class TranslationManager : MonoBehaviour
 {
     [Header("MRUK")]
     [SerializeField] private MRUK _mruk;
     [SerializeField] private MRUKAnchor.SceneLabels _sceneLabelsToShow;
     [SerializeField] private GameObject _labelPrefab;
-    
-    [Header("Translation")]
-    [SerializeField] private TMP_Dropdown _languageDropdown;
-    [SerializeField] private TextToSpeechManager _textToSpeechManager;
 
     private List<TranslateObject> _translateObjects = new List<TranslateObject>();
-    private TranslateLanguage _currentLanguage = TranslateLanguage.en;
 
     private string _translationApiUrl = "https://translation.googleapis.com/language/translate/v2?key=";
 
@@ -45,7 +31,7 @@ public class TranslationManager : MonoBehaviour
             if(!_sceneLabelsToShow.ToString().Contains(anchor.GetLabelsAsEnum().ToString())) continue;
             
             var labelObject = Instantiate(_labelPrefab, anchor.transform).GetComponent<TranslateObject>();
-            labelObject.Initiate(GetAnchorLabel(anchor), _textToSpeechManager);
+            labelObject.Initiate(GetAnchorLabel(anchor));
             _translateObjects.Add(labelObject);
         }
     }
@@ -54,28 +40,26 @@ public class TranslationManager : MonoBehaviour
     /// Changes the label language based on the provided desired language enum.
     /// Uses events to check when translation finishes.
     /// </summary>
-    public void ChangeLanguage(TranslateLanguage desiredLanguage)
+    public void ChangeLabels(Languages desiredLanguage)
     {
         foreach (var translateObject in _translateObjects)
         {
             var translateEvent = new UnityEvent<string>();
             StartCoroutine(TranslateText(translateEvent, translateObject.GetLabel(),
-                _currentLanguage, desiredLanguage));
+                AppManager.Instance.GetCurrentLanguage(), desiredLanguage));
             translateEvent.AddListener(translatedText =>
             {
                 translateObject.ChangeLabel(translatedText);
                 translateEvent.RemoveAllListeners();
             });
         }
-
-        _currentLanguage = desiredLanguage;
     }
 
     /// <summary>
     /// Handles sending REST API to Googles Translation API based on the text provided and original language and desired language enum.
     /// On finishing the translation, it invokes the translate event.
     /// </summary>
-    public IEnumerator TranslateText(UnityEvent<string> translateEvent, string textToTranslate, TranslateLanguage originLanguage, TranslateLanguage desiredLanguage)
+    public IEnumerator TranslateText(UnityEvent<string> translateEvent, string textToTranslate, Languages originLanguage, Languages desiredLanguage)
     {
         string url =  _translationApiUrl + GetApiKey();
         string jsonRequestBody = "{\"q\":\"" + textToTranslate + "\",\"source\":\"" + originLanguage + "\",\"target\":\"" + desiredLanguage + "\"}";
@@ -96,52 +80,6 @@ public class TranslationManager : MonoBehaviour
         else
         {
             Debug.LogError("Translation request failed: " + request.error);
-        }
-    }
-
-    /// <summary>
-    /// Returns enum of currently selected language.
-    /// </summary>
-    public TranslateLanguage GetCurrentLanguage()
-    {
-        return _currentLanguage;
-    }
-    
-    /// <summary>
-    /// Called by the languages dropdown menu.
-    /// Handles the switch between value and language enum, assigns the currently selected language.
-    /// </summary>
-    public void OnLanguageDropdownValueChanged(int index)
-    {
-        string selectedLanguage = _languageDropdown.options[index].text;
-
-        switch (selectedLanguage)
-        {
-            case "Spanish":
-            {
-                ChangeLanguage(TranslateLanguage.es);
-                break;
-            }
-            case "English":
-            {
-                ChangeLanguage(TranslateLanguage.en);
-                break;
-            }
-            case "French":
-            {
-                ChangeLanguage(TranslateLanguage.fr);
-                break;
-            }
-            case "Hungarian":
-            {
-                ChangeLanguage(TranslateLanguage.hu);
-                break;
-            }
-            case "Croatian":
-            {
-                ChangeLanguage(TranslateLanguage.hr);
-                break;
-            }
         }
     }
 
