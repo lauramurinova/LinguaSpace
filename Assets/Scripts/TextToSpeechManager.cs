@@ -9,8 +9,9 @@ public class TextToSpeechManager : MonoBehaviour
     [SerializeField] private TranslationManager _translationManager;
     [SerializeField] private TextToSpeechHandler _textToSpeechHandler;
 
-    private const string TextToSpeechUrl = "https://texttospeech.googleapis.com/v1/text:synthesize?key=";
-
+    /// <summary>
+    /// Initiates Text to Speech by Google Rest Api and plays audio clip upon successful request.
+    /// </summary>
     public void Speak(string text)
     {
         Action<AudioClip> audioReceived = AudioClipReceived;
@@ -18,11 +19,17 @@ public class TextToSpeechManager : MonoBehaviour
         _textToSpeechHandler.GetSpeechAudioFromGoogle(text, _translationManager.GetCurrentLanguage().ToString(), audioReceived, errorReceived);
     }
 
+    /// <summary>
+    /// Called on error during Text to Speech request.
+    /// </summary>
     private void ErrorReceived(BadRequestData badRequestData)
     {
         Debug.Log($"Error {badRequestData.error.code} : {badRequestData.error.message}");
     }
 
+    /// <summary>
+    /// Called on successful Text to Speech request.
+    /// </summary>
     private void AudioClipReceived(AudioClip clip)
     {
         _speaker.Stop();

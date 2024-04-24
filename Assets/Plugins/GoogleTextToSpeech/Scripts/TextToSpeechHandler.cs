@@ -7,8 +7,6 @@ namespace GoogleTextToSpeech.Scripts
 {
     public class TextToSpeechHandler : MonoBehaviour
     {
-        private string apiKey;
-
         private Action<string> _actionRequestReceived;
         private Action<BadRequestData> _errorReceived;
         private Action<AudioClip> _audioClipReceived;
@@ -16,19 +14,12 @@ namespace GoogleTextToSpeech.Scripts
         private RequestService _requestService;
         private static AudioConverter _audioConverter;
 
-        private void Start()
-        {
-            apiKey = GetApiKey();
-        }
-        
-        private string GetApiKey()
-        {
-            return Resources.Load<TextAsset>("Security/APIKey").ToString();
-        }
+        private string _googleTextToSpeechUrl = "https://texttospeech.googleapis.com/v1/text:synthesize";
 
-        public void GetSpeechAudioFromGoogle(string textToConvert, string voice, Action<AudioClip> audioClipReceived,  Action<BadRequestData> errorReceived)
+        public void GetSpeechAudioFromGoogle(string textToConvert, string voice, Action<AudioClip> audioClipReceived,
+            Action<BadRequestData> errorReceived)
         {
-            _actionRequestReceived += (requestData => RequestReceived(requestData,audioClipReceived));
+            _actionRequestReceived += (requestData => RequestReceived(requestData, audioClipReceived));
 
             if (_requestService == null)
                 _requestService = gameObject.AddComponent<RequestService>();
@@ -57,15 +48,20 @@ namespace GoogleTextToSpeech.Scripts
                     }
             };
 
-            RequestService.SendDataToGoogle("https://texttospeech.googleapis.com/v1/text:synthesize", dataToSend,
-                apiKey, _actionRequestReceived, errorReceived);
+            RequestService.SendDataToGoogle(_googleTextToSpeechUrl, dataToSend, GetApiKey(), _actionRequestReceived,
+                errorReceived);
         }
-
+        
         private static void RequestReceived(string requestData, Action<AudioClip> audioClipReceived)
         {
             var audioData = JsonUtility.FromJson<AudioData>(requestData);
             AudioConverter.SaveTextToMp3(audioData);
             _audioConverter.LoadClipFromMp3(audioClipReceived);
+        }
+
+        private string GetApiKey()
+        {
+            return Resources.Load<TextAsset>("Security/APIKey").ToString();
         }
     }
 }
