@@ -3,20 +3,19 @@ using GoogleTextToSpeech.Scripts;
 using GoogleTextToSpeech.Scripts.Data;
 using UnityEngine;
 
-public class TextToSpeechManager : MonoBehaviour
+public class GoogleTextToSpeechManager : TextToSpeechManager
 {
     [SerializeField] private AudioSource _speaker;
-    [SerializeField] private TranslationManager _translationManager;
     [SerializeField] private TextToSpeechHandler _textToSpeechHandler;
 
     /// <summary>
     /// Initiates Text to Speech by Google Rest Api and plays audio clip upon successful request.
     /// </summary>
-    public void Speak(string text)
+    public override void Speak(string text)
     {
         Action<AudioClip> audioReceived = AudioClipReceived;
         Action<BadRequestData> errorReceived = ErrorReceived;
-        _textToSpeechHandler.GetSpeechAudioFromGoogle(text, _translationManager.GetCurrentLanguage().ToString(), audioReceived, errorReceived);
+        _textToSpeechHandler.GetSpeechAudioFromGoogle(text, AppManager.Instance.GetCurrentLanguage().ToString(), audioReceived, errorReceived);
     }
 
     /// <summary>
