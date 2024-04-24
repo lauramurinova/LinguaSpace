@@ -14,6 +14,9 @@ public class GoogleSpeechToTextManager : SpeechToTextManager
     [Header("UI")]
     [SerializeField] private Image _recordButtonImage;
     [SerializeField] private TextMeshProUGUI _translatedTextUI;
+    [SerializeField] private Color _microphoneDisabledColor = Color.red;
+    [SerializeField] private Color _microphoneEnabledColor = Color.green;
+    [SerializeField] private TextMeshProUGUI _listeningText;
 
     // Google Speech To Text url
     private const string SpeechToTextUrl = "https://speech.googleapis.com/v1/speech:recognize?key=";
@@ -61,7 +64,8 @@ public class GoogleSpeechToTextManager : SpeechToTextManager
     /// </summary>
     private AudioClip ActivateMicrophone()
     {
-        _recordButtonImage.color = Color.green;
+        _recordButtonImage.color = _microphoneEnabledColor;
+        _listeningText.gameObject.SetActive(true);
         return Microphone.Start(null, false, _recordingDuration, 44100);
     }
 
@@ -71,7 +75,8 @@ public class GoogleSpeechToTextManager : SpeechToTextManager
     private void DeactivateMicrophone()
     {
         Microphone.End(null);
-        _recordButtonImage.color = Color.red;
+        _recordButtonImage.color = _microphoneDisabledColor;
+        _listeningText.gameObject.SetActive(false);
     }
 
     /// <summary>

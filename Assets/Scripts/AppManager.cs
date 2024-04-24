@@ -10,7 +10,7 @@ public enum Languages
     es = 1,
     hu = 2,
     fr = 3,
-    hr = 4
+    bg = 4
 }
 
 public class AppManager : MonoBehaviour
@@ -69,40 +69,31 @@ public class AppManager : MonoBehaviour
     {
         string selectedLanguage = _languageDropdown.options[index].text;
 
-        switch (selectedLanguage)
+        if (selectedLanguage.Contains("Spanish"))
         {
-            case "Spanish":
-            {
-                _translationManager.ChangeLabels(Languages.es);
-                SetCurrentLanguage(Languages.es);
-                break;
-            }
-            case "English":
-            {
-                _translationManager.ChangeLabels(Languages.en);
-                SetCurrentLanguage(Languages.en);
-                break;
-            }
-            case "French":
-            {
-                _translationManager.ChangeLabels(Languages.fr);
-                SetCurrentLanguage(Languages.fr);
-                break;
-            }
-            case "Hungarian":
-            {
-                _translationManager.ChangeLabels(Languages.hu);
-                SetCurrentLanguage(Languages.hu);
-                break;
-            }
-            case "Croatian":
-            {
-                _translationManager.ChangeLabels(Languages.hr);
-                SetCurrentLanguage(Languages.hr);
-                break;
-            }
+            _translationManager.ChangeLabels(Languages.es);
+            SetCurrentLanguage(Languages.es);
         }
-
+        else if (selectedLanguage.Contains("English"))
+        {
+            _translationManager.ChangeLabels(Languages.en);
+            SetCurrentLanguage(Languages.en);
+        }
+        else if (selectedLanguage.Contains("Hungarian"))
+        {
+            _translationManager.ChangeLabels(Languages.hu);
+            SetCurrentLanguage(Languages.hu);
+        }
+        else if (selectedLanguage.Contains("French"))
+        {
+            _translationManager.ChangeLabels(Languages.fr);
+            SetCurrentLanguage(Languages.fr);
+        }
+        else if (selectedLanguage.Contains("Bulgarian"))
+        {
+            _translationManager.ChangeLabels(Languages.bg);
+            SetCurrentLanguage(Languages.bg);
+        }
         SetCurrentManagers();
     }
 
