@@ -21,5 +21,8 @@ For more advanced languages, Google API was used, which includes Hungarian, Fren
 ## Tech Stack
 
 Meta All in One SDK (Scene Understanding, Passthrough, Anchors, Voice SDK - WIT.AI https://wit.ai) - https://developer.oculus.com/downloads/package/meta-xr-sdk-all-in-one-upm/
+
 Google Text To Speech API - https://cloud.google.com/text-to-speech
+
 Google Translation API - https://cloud.google.com/translate
+
