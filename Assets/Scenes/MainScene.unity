@@ -17963,9 +17963,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1686944218}
   - component: {fileID: 1686944217}
-  - component: {fileID: 1686944216}
-  - component: {fileID: 1686944215}
   - component: {fileID: 1686944220}
+  - component: {fileID: 1686944221}
   m_Layer: 0
   m_Name: '[BuildingBlock] Room Model'
   m_TagString: Untagged
@@ -17973,37 +17972,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1686944215
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1686944214}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f1c4a1713e5d1b4409a95470bcf9e5b8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &1686944216
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1686944214}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f2253d75e3ddc644b8153409c62dd74e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  PlanePrefab: {fileID: 1778430688}
-  VolumePrefab: {fileID: 414378884}
-  PrefabOverrides: []
-  ActiveRoomsOnly: 1
-  VerboseLogging: 0
-  MaxSceneAnchorUpdatesPerFrame: 3
-  _initialAnchorParent: {fileID: 0}
 --- !u!114 &1686944217
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -18050,7 +18018,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SceneLoadedEvent:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1979626973}
+        m_TargetAssemblyTypeName: TranslationManager, Assembly-CSharp
+        m_MethodName: LoadLabels
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   RoomCreatedEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -18068,6 +18048,30 @@ MonoBehaviour:
     LoadSceneOnStartup: 1
     SeatWidth: 0.6
     SceneJson: 
+--- !u!114 &1686944221
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1686944214}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e76943ac7e7394f3e969f0c048b26639, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SpawnOnStart: 1
+  MeshMaterial: {fileID: 2100000, guid: 69e54be2e702f984683fa4816dc4b0f8, type: 2}
+  BorderSize: 0
+  Colliders: 0
+  CutHoles: 0
+  castShadows: 1
+  hideMesh: 0
+  textureCoordinateModes:
+  - WallU: 0
+    WallV: 0
+    AnchorUV: 0
+  Labels: 0
 --- !u!1 &1694496182
 GameObject:
   m_ObjectHideFlags: 0
@@ -20906,8 +20910,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5cc89a8dbb2c4e409fe5a2233415dc1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _speaker: {fileID: 246602729}
   _mruk: {fileID: 1686944220}
+  _sceneLabelsToShow: 16248
   _labelPrefab: {fileID: 3293365653040793177, guid: 43fc647458594f541ad866bab2f98f09,
     type: 3}
   _languageDropdown: {fileID: 13426159}
