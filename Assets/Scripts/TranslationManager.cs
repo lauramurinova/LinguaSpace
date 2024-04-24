@@ -14,7 +14,8 @@ public enum TranslateLanguage
 {
     en = 0,
     es = 1,
-    hu = 2
+    hu = 2,
+    sk = 3
 }
 
 public class TranslationManager : MonoBehaviour
@@ -116,6 +117,10 @@ public class TranslationManager : MonoBehaviour
         else if (selectedLanguage == "Hungarian")
         {
             ChangeLanguage(TranslateLanguage.hu);
+        }
+        else if (selectedLanguage == "Slovak")
+        {
+            ChangeLanguage(TranslateLanguage.sk);
         }
     }
 
