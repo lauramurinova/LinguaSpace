@@ -58,3 +58,6 @@ sysinfo.txt
 # Crashlytics generated file
 crashlytics-build.properties
 
+# Ignore the Security folder within Resources
+Assets/Resources/Security/
+Assets/Resources/Security.meta
