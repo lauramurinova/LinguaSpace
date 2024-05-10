@@ -2,6 +2,8 @@ using System;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
+using Random = System.Random;
 
 [Serializable]
 public enum Languages
@@ -42,6 +44,20 @@ public class AppManager : MonoBehaviour
     
     private Languages _currentLanguage = Languages.en;
     private static AppManager _instance;
+    
+    private string[] _congratulationTexts = new[]
+    {
+        "Congratulations, you got it right!",
+        "Good job!",
+        "Nice work, you got it!"
+    };
+    
+    private string[] _tryAgainTexts = new[]
+    {
+        "You didn't get it this time, try again!",
+        "It's not quite right, you can try again!",
+        "It's pronounced a bit differently, we can practice more together!"
+    };
 
     private void Awake()
     {
@@ -96,6 +112,15 @@ public class AppManager : MonoBehaviour
         }
         SetCurrentManagers();
     }
+    
+    /// <summary>
+    /// Translates the given text from given language to desired language.
+    /// The translated text is returned in a string within the Unity Event;
+    /// </summary>
+    public void TranslateTextToLanguage(UnityEvent<string> translateEvent, string text, Languages originLanguage, Languages desiredLanguage)
+    {
+        _translationManager.TranslateText(translateEvent, text, originLanguage, desiredLanguage);
+    }
 
     /// <summary>
     /// Called to initiate text to speech.
@@ -112,7 +137,24 @@ public class AppManager : MonoBehaviour
     /// </summary>
     public void ListenSTT()
     {
-        _currentSpeechToTextManager.StartRecording();
+        // TODO - when Object label has the listen button update the string according to that
+        _currentSpeechToTextManager.StartRecording("TEXT FROM LABEL THAT USER WANTS TO CHECK THE PRONUNCIATION OF");
+    }
+
+    /// <summary>
+    /// Gives the user audio feedback, to congratulate.
+    /// </summary>
+    public void GivePositiveFeedbackToUser()
+    {
+        _standardTextToSpeechManager.Speak(_congratulationTexts[UnityEngine.Random.Range(0, _congratulationTexts.Length)]);
+    }
+    
+    /// <summary>
+    /// Gives the user audio feedback to try again.
+    /// </summary>
+    public void GiveNegativeFeedbackToUser()
+    {
+        _standardTextToSpeechManager.Speak(_tryAgainTexts[UnityEngine.Random.Range(0, _tryAgainTexts.Length)]);
     }
     
     /// <summary>
