@@ -7,8 +7,7 @@ using UnityEngine;
  
 public class WordSuggesterAgent : MonoBehaviour
 {
-    [SerializeField] 
-    private OpenAIApi openai = new OpenAIApi();
+    private OpenAIApi openai;
 
     public enum WordCategory
     {
@@ -19,6 +18,19 @@ public class WordSuggesterAgent : MonoBehaviour
         Verb,
         Adjective
     };
+    private string GetApiKey()
+    {
+        return Resources.Load<TextAsset>("Security/OpenAI-APIKey").ToString();
+    }
+    public void Awake()
+    {
+        var openAIKey = GetApiKey();
+        if (openAIKey.Length == 0)
+        {
+            throw new SystemException("Open AI Api key file not found in project: Resources/Security/OpenAI-APIKey.txt");
+        }
+        openai = new OpenAIApi(openAIKey);
+    }
     
     // we expect table results in this format
     static List<Tuple<string, string>> ConvertToTupleList(string input)
@@ -52,7 +64,7 @@ public class WordSuggesterAgent : MonoBehaviour
         // Complete the instruction
         var completionResponse = await openai.CreateChatCompletion(new CreateChatCompletionRequest()
         {
-            Model = "gpt-3.5-turbo-1106",
+            Model = "gpt-3.5-turbo",
             Messages = newMessages
         });
 
@@ -94,7 +106,7 @@ public class WordSuggesterAgent : MonoBehaviour
     }
     
     public async Task<List<Tuple<String, String>>> FindRelatedWords(String fromWord, String fromLanguage,
-        String toLanguage, WordCategory toCategory = WordCategory.Any, int numWords = 5,
+        String toLanguage, WordCategory toCategory = WordCategory.Any, int numWords = 3,
         float difficulty = 0.0f)
     {
         String difficultyString = "Beginner";
@@ -113,15 +125,26 @@ public class WordSuggesterAgent : MonoBehaviour
             Present the results as a plain text file with two comma-separated columns: word in {fromLanguage}, 
             word in {toLanguage} and nothing more.";
         String customMixGptQuery = $@"
-            You are a thesaurus. Give me {numWords} in {toLanguage} 
-            with Difficulty:{difficultyString} commonly used with the {fromLanguage} word {fromWord}.  
+            You are a thesaurus. Give me {numWords} words in {toLanguage} 
+            commonly used with the {fromLanguage} word {fromWord}.  
             One of them should be a Synonym, One of them should be a Verb, One of them should be an Adjective.
-            Present the results as a plain text file with two comma-separated columns: word in {fromLanguage}, 
-            word in {toLanguage} and nothing more.";
+            Do not include the original word in the list of 3. 
+            Present the results as a plain text file with only two comma-separated columns: 
+            word in {fromLanguage}, that {fromLanguage} word translated in {toLanguage} and nothing more. Do not prefix anything";
+        String anyGptQuery = $@"
+            You are a thesaurus. Give me {numWords} words in {toLanguage} 
+            commonly used with the {fromLanguage} word {fromWord}.  
+            Do not include the original word in the list of 3. 
+            Present the results as a plain text file with only two comma-separated columns: 
+            word in {fromLanguage}, that {fromLanguage} word translated in {toLanguage} and nothing more. Do not prefix anything";
+
         var query = standardGptQuery;
         if (toCategory == WordCategory.CustomMix)
         {
             query = customMixGptQuery;
+        } else if (toCategory == WordCategory.Any)
+        {
+            query = anyGptQuery;
         }
         query = FormatMultiLineLiteral(query);
         DebugMultiLineLog($"Query: {query}");
