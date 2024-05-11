@@ -12,7 +12,7 @@ public class WordSuggesterAgentTestClient : MonoBehaviour
     [SerializeField] private TMP_Dropdown _dropdown;
     [SerializeField] private InputField _inputField;
     [SerializeField] private WordSuggesterAgent _agent;
-    
+    [SerializeField] private TMP_Text _textField;
     // Start is called before the first frame update
     void Start()
     {
@@ -22,6 +22,7 @@ public class WordSuggesterAgentTestClient : MonoBehaviour
     private void AppendMessage(String message)
     {
         Debug.Log($"{message}");
+        _textField.text += message + "\n";
     }
 
     async void ProcessQueryAsync()
@@ -57,6 +58,7 @@ public class WordSuggesterAgentTestClient : MonoBehaviour
     void OnClick()
     {
         Debug.Log("onClick()");
+        _textField.text = "";
         ProcessQueryAsync();
     }
 }

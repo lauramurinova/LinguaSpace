@@ -7,10 +7,12 @@ using UnityEngine;
  
 public class WordSuggesterAgent : MonoBehaviour
 {
+    [SerializeField] 
     private OpenAIApi openai = new OpenAIApi();
 
     public enum WordCategory
     {
+        CustomMix,
         Any,
         Synonym,
         Noun,
@@ -46,10 +48,6 @@ public class WordSuggesterAgent : MonoBehaviour
         };
         List<ChatMessage> newMessages = new List<ChatMessage>();
         newMessages.Add(newMessage);
-        // XXX I don't think we need message history, just send the single query directly
-        //AppendMessage(newMessage);
-        //if (messages.Count == 0) newMessage.Content = prompt + "\n" + inputField.text;
-        //messages.Add(newMessage);
 
         // Complete the instruction
         var completionResponse = await openai.CreateChatCompletion(new CreateChatCompletionRequest()
@@ -61,7 +59,6 @@ public class WordSuggesterAgent : MonoBehaviour
         if (completionResponse.Choices != null && completionResponse.Choices.Count > 0)
         {
             var response = completionResponse.Choices[0].Message;
-            //response.Content = response.Content.Trim();
             Debug.Log($"Server response: {completionResponse}");
             return response.Content;
         }
@@ -110,15 +107,25 @@ public class WordSuggesterAgent : MonoBehaviour
             difficultyString = "Advanced";
         }
 
-        String findRelatedWordsGptQuery = $@"
+        String standardGptQuery = $@"
             You are a thesaurus. Give me {numWords} in {toLanguage} from category:{toCategory} 
             and Difficulty:{difficultyString} commonly used with the {fromLanguage} word {fromWord}.  
             Present the results as a plain text file with two comma-separated columns: word in {fromLanguage}, 
             word in {toLanguage} and nothing more.";
-
-        findRelatedWordsGptQuery = FormatMultiLineLiteral(findRelatedWordsGptQuery);
-        DebugMultiLineLog($"Query: {findRelatedWordsGptQuery}");
-        String responseString = await callChatGpt(findRelatedWordsGptQuery);
+        String customMixGptQuery = $@"
+            You are a thesaurus. Give me {numWords} in {toLanguage} 
+            with Difficulty:{difficultyString} commonly used with the {fromLanguage} word {fromWord}.  
+            One of them should be a Synonym, One of them should be a Verb, One of them should be an Adjective.
+            Present the results as a plain text file with two comma-separated columns: word in {fromLanguage}, 
+            word in {toLanguage} and nothing more.";
+        var query = standardGptQuery;
+        if (toCategory == WordCategory.CustomMix)
+        {
+            query = customMixGptQuery;
+        }
+        query = FormatMultiLineLiteral(query);
+        DebugMultiLineLog($"Query: {query}");
+        String responseString = await callChatGpt(query);
         DebugMultiLineLog($"Response: {responseString}");
 
         if (responseString.Length > 0)
