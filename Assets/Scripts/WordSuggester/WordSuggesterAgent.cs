@@ -69,7 +69,7 @@ public class WordSuggesterAgent : MonoBehaviour
         // Complete the instruction
         var completionResponse = await openai.CreateChatCompletion(new CreateChatCompletionRequest()
         {
-            Model = "gpt-3.5-turbo",
+            Model = "gpt-4-turbo",
             Messages = newMessages
         });
 
@@ -116,7 +116,9 @@ public class WordSuggesterAgent : MonoBehaviour
         String gptQuery = $@"
             You are a language coach. Give me a sentence between {minNumWords} and {maxNumWords} words in {toLanguage} 
             using the word {wordInToLanguage}.  Then give me the same sentence translated into {fromLanguage}. 
-            Do not add language labels. Separate each sentence with a single newline.";
+            Do not add language labels. There will be two lines of text total in the output. 
+            Terminate the first sentence with a single newline character. 
+            ";
         
         var query = FormatMultiLineLiteral(gptQuery);
         DebugMultiLineLog($"Query: {query}");
@@ -150,23 +152,24 @@ public class WordSuggesterAgent : MonoBehaviour
         }
 
         String standardGptQuery = $@"
-            You are a thesaurus. Give me {numWords} in {toLanguage} from category:{toCategory} 
-            and Difficulty:{difficultyString} commonly used with the {fromLanguage} word {fromWord}.  
-            Present the results as a plain text file with two comma-separated columns: word in {fromLanguage}, 
-            word in {toLanguage} and nothing more.";
+            You are a language coach. Give me {numWords} single words with no spaces in {toLanguage} from category:{toCategory} 
+            commonly used with the {fromLanguage} word {fromWord}.  
+            Present the results as a plain text file with only two comma-separated columns: word in {fromLanguage}, 
+            that {fromLanguage} word translated to {toLanguage} and nothing more. Each row contains
+            exactly the two words and nothing more.  Do not prefix anything";
         String customMixGptQuery = $@"
             You are a thesaurus. Give me {numWords} words in {toLanguage} 
             commonly used with the {fromLanguage} word {fromWord}.  
             One of them should be a Synonym, One of them should be a Verb, One of them should be an Adjective.
             Do not include the original word in the list of 3. 
             Present the results as a plain text file with only two comma-separated columns: 
-            word in {fromLanguage}, that {fromLanguage} word translated in {toLanguage} and nothing more. Do not prefix anything";
+            word in {fromLanguage}, that {fromLanguage} word translated to {toLanguage} and nothing more. Do not prefix anything";
         String anyGptQuery = $@"
             You are a thesaurus. Give me {numWords} words in {toLanguage} 
             commonly used with the {fromLanguage} word {fromWord}.  
             Do not include the original word in the list of 3. 
             Present the results as a plain text file with only two comma-separated columns: 
-            word in {fromLanguage}, that {fromLanguage} word translated in {toLanguage} and nothing more. Do not prefix anything";
+            word in {fromLanguage}, that {fromLanguage} word translated to {toLanguage} and nothing more. Do not prefix anything";
 
         var query = standardGptQuery;
         if (toCategory == WordCategory.CustomMix)
