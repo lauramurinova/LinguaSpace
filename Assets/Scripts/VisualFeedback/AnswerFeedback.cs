@@ -11,7 +11,9 @@ public class AnswerFeedback : MonoBehaviour
     
     [Header("Animation position")]
     [SerializeField] private Transform _uiParentTransform; 
-    [SerializeField] private Vector3 _moveOffset = new Vector3(0, 10, 0);
+    [SerializeField] private Vector3 _moveOffset = new Vector3(0, 30, 0);
+    
+    [SerializeField] private GameObject correctPrefab;
     
     public void ShowAnswerUI(GameObject uiPrefab)
     {
@@ -28,5 +30,10 @@ public class AnswerFeedback : MonoBehaviour
         uiSequence.Append(uiCanvasGroup.DOFade(0, _fadeDuration).SetEase(Ease.InOutQuad));
 
         uiSequence.OnComplete(() => Destroy(uiInstance));
+    }
+
+    public void Test()
+    {
+        ShowAnswerUI(correctPrefab);
     }
 }

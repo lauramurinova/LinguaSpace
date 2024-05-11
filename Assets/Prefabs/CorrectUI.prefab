@@ -226,7 +226,6 @@ GameObject:
   - component: {fileID: 6350313550773460529}
   - component: {fileID: 7070217799680253728}
   - component: {fileID: 5525873953075041447}
-  - component: {fileID: 3440149404331113376}
   m_Layer: 5
   m_Name: CorrectUI
   m_TagString: Untagged
@@ -300,7 +299,7 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
-  m_PresetInfoIsWorld: 1
+  m_PresetInfoIsWorld: 0
 --- !u!114 &636034648285620298
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -394,19 +393,3 @@ CanvasGroup:
   m_Interactable: 0
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
---- !u!114 &3440149404331113376
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5421905987832629843}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 32b1942fd55372243ad2682d6030013f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _fadeDuration: 0.6
-  _displayDuration: 3
-  _uiParentTransform: {fileID: 0}
-  _moveOffset: {x: 0, y: 35, z: 0}
