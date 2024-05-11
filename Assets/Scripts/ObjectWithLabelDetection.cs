@@ -11,8 +11,9 @@ public class ObjectWithLabelDetection : MonoBehaviour
     public TMP_Text debuggerText2;*/
     
     private AppManager _appManager;
-    private float radius = 0.52f; // Adjust this radius according to your needs
+    [SerializeField]private float radius = 0.1f; // Adjust this radius according to your needs
     private float maxDistance = 1f; // Adjust this distance according to your needs
+    private Vector3 center;
     
     
     
@@ -20,20 +21,22 @@ public class ObjectWithLabelDetection : MonoBehaviour
     void Start()
     {
         _appManager = AppManager.Instance;
-    }
+        }
 
     // Update is called once per frame
-    /*private void Update()
+    private void Update()
     {
+        //var k = transform.position;
+        center = transform.position;
         // Define the sphere cast parameters
-        Vector3 center = transform.position;
-        Vector3 direction = Vector3.zero; // Adjust this direction according to your needs
+        Vector3 direction = Vector3.down; // Adjust this direction according to your needs
          
 
         // Perform the sphere cast
-        RaycastHit hit;
-        if (Physics.SphereCast(center, radius, direction, out hit, maxDistance))
+        RaycastHit [] hits = Physics.SphereCastAll(center, radius, direction, maxDistance);
+        foreach (RaycastHit hit in hits)
         {
+            Debug.Log($"DETECTED {hit.collider.gameObject.name}");
             // Get the parent object
             var parentObject = hit.collider.gameObject.GetComponentInParent<MRUKAnchor>();
             if (parentObject != null)
@@ -43,14 +46,15 @@ public class ObjectWithLabelDetection : MonoBehaviour
                 if (labelObject != null)
                 {
                     _appManager.SpeakTTS(labelObject.labelName);
-                    Debug.Log($"SPOKEN WORDS: {labelObject.labelName}");
+                    //Debug.Log($"SPOKEN WORDS: {labelObject.labelName}");
                 }
             }
         }
-    }*/
+    }
     
-    private void OnCollisionEnter(Collision other)
+    /*private void OnCollisionEnter(Collision other)
     {
+        Debug.Log("DETECTED");
         //Get parent object
         var parentObject = other.gameObject.GetComponentInParent<MRUKAnchor>();
         if (!parentObject) return;
@@ -60,20 +64,16 @@ public class ObjectWithLabelDetection : MonoBehaviour
         if (!labelObject) return;
         _appManager.SpeakTTS(labelObject.labelName);
         
+        
 
         
-    }
+    }*/
     
     private void OnDrawGizmosSelected()
     {
-        // Define the sphere cast parameters
-        Vector3 center = transform.position;
-        float radius = 0.5f; // Adjust this radius according to your needs
-        Vector3 direction = Vector3.down; // Adjust this direction according to your needs
-        float maxDistance = 1f; // Adjust this distance according to your needs
-
         // Draw the sphere cast gizmo
-        Gizmos.color = Color.red;
+        Gizmos.color = Color.green;
         Gizmos.DrawWireSphere(center, radius);
+        
     }
 }
