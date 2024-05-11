@@ -31,7 +31,12 @@ public class WordSuggesterAgent : MonoBehaviour
         }
         openai = new OpenAIApi(openAIKey);
     }
-    
+
+    static String[] ConvertToStringArr(string input)
+    {
+        return input.Split('\n');
+    }
+
     // we expect table results in this format
     static List<Tuple<string, string>> ConvertToTupleList(string input)
     {
@@ -103,6 +108,31 @@ public class WordSuggesterAgent : MonoBehaviour
         {
             Debug.Log(line);
         }
+    }
+    
+    public async Task<Tuple<String, String>> ConstructSentence(String wordInToLanguage, String toLanguage, 
+        String fromLanguage, int minNumWords = 5, int maxNumWords = 10)
+    {
+        String gptQuery = $@"
+            You are a language coach. Give me a sentence between {minNumWords} and {maxNumWords} words in {toLanguage} 
+            using the word {wordInToLanguage}.  Then give me the same sentence translated into {fromLanguage}. 
+            Do not add language labels. Separate each sentence with a single newline.";
+        
+        var query = FormatMultiLineLiteral(gptQuery);
+        DebugMultiLineLog($"Query: {query}");
+        String responseString = await callChatGpt(query);
+        DebugMultiLineLog($"Response: {responseString}");
+
+        if (responseString.Length > 0)
+        {
+            var resultsDataTable = ConvertToStringArr(responseString);
+            if (resultsDataTable.Length == 2)
+            {
+                return new Tuple<string, string>(resultsDataTable[0], resultsDataTable[1]);
+            }
+        }
+
+        return null;
     }
     
     public async Task<List<Tuple<String, String>>> FindRelatedWords(String fromWord, String fromLanguage,

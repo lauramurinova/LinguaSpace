@@ -8,15 +8,18 @@ using TMPro;
 
 public class WordSuggesterAgentTestClient : MonoBehaviour
 {
-    [SerializeField] private Button _button;
+    [SerializeField] private Button _wordsButton;
+    [SerializeField] private Button _sentenceButton;
     [SerializeField] private TMP_Dropdown _dropdown;
     [SerializeField] private InputField _inputField;
     [SerializeField] private WordSuggesterAgent _agent;
     [SerializeField] private TMP_Text _textField;
+
     // Start is called before the first frame update
     void Start()
     {
-        _button.onClick.AddListener(OnClick);
+        _wordsButton.onClick.AddListener(OnWordsClick);
+        _sentenceButton.onClick.AddListener(OnSentenceClick);
     }
 
     private void AppendMessage(String message)
@@ -25,7 +28,7 @@ public class WordSuggesterAgentTestClient : MonoBehaviour
         _textField.text += message + "\n";
     }
 
-    async void ProcessQueryAsync()
+    async void ProcessWordsQueryAsync()
     {
         WordSuggesterAgent.WordCategory categoryEnum = 
             (WordSuggesterAgent.WordCategory) Enum.Parse(typeof(WordSuggesterAgent.WordCategory), 
@@ -54,11 +57,29 @@ public class WordSuggesterAgentTestClient : MonoBehaviour
             AppendMessage("empty/non-parseable response");
         }
     }
-
-    void OnClick()
+    
+    async void ProcessSentenceQueryAsync()
     {
-        Debug.Log("onClick()");
+        var result = await
+            _agent.ConstructSentence(_inputField.text,
+                "Spanish", "English");
+        var sentences = result;
+        
+        // Iterate through the list and print each column
+        // Print each column
+        AppendMessage(sentences.Item1);
+        AppendMessage(sentences.Item2);
+    }
+
+    void OnWordsClick()
+    {
         _textField.text = "";
-        ProcessQueryAsync();
+        ProcessWordsQueryAsync();
+    }
+
+    void OnSentenceClick()
+    {
+        _textField.text = "";
+        ProcessSentenceQueryAsync();
     }
 }
