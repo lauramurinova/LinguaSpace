@@ -12,7 +12,7 @@ public class ObjectWithLabelDetection : MonoBehaviour
     
     private AppManager _appManager;
     [SerializeField]private float radius = 0.1f; // Adjust this radius according to your needs
-    private float maxDistance = 1f; // Adjust this distance according to your needs
+    private float maxDistance = 0.02f; // Adjust this distance according to your needs
     private Vector3 center;
     
     
@@ -29,26 +29,27 @@ public class ObjectWithLabelDetection : MonoBehaviour
         //var k = transform.position;
         center = transform.position;
         // Define the sphere cast parameters
-        Vector3 direction = Vector3.down; // Adjust this direction according to your needs
+        Vector3 direction = Vector3.forward; // Adjust this direction according to your needs
          
 
         // Perform the sphere cast
         RaycastHit [] hits = Physics.SphereCastAll(center, radius, direction, maxDistance);
         foreach (RaycastHit hit in hits)
         {
-            Debug.Log($"DETECTED {hit.collider.gameObject.name}");
+            Debug.Log($"Found {hit.collider.gameObject.name}");
+
             // Get the parent object
             var parentObject = hit.collider.gameObject.GetComponentInParent<MRUKAnchor>();
-            if (parentObject != null)
-            {
-                // Find label object in MRUK anchor
-                var labelObject = parentObject.GetComponentInChildren<TranslateObject>();
-                if (labelObject != null)
-                {
-                    _appManager.SpeakTTS(labelObject.labelName);
-                    //Debug.Log($"SPOKEN WORDS: {labelObject.labelName}");
-                }
-            }
+            if (!parentObject) continue;
+
+            // Find label object in MRUK anchor
+            var labelObject = parentObject.GetComponentInChildren<TranslateObject>();
+            if (!labelObject) continue;
+
+            _appManager.SpeakTTS(labelObject.labelName);
+            Debug.Log($"SPOKEN WORDS: {this.gameObject.name} {labelObject.labelName}");
+
+
         }
     }
     
