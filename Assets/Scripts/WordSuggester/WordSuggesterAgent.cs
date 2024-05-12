@@ -73,7 +73,7 @@ public class WordSuggesterAgent : MonoBehaviour
         // Complete the instruction
         var completionResponse = await openai.CreateChatCompletion(new CreateChatCompletionRequest()
         {
-            Model = "gpt-4-turbo",
+            Model = "gpt-3.5-turbo",
             Messages = newMessages
         });
 

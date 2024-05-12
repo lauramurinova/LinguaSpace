@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Meta.XR.MRUtilityKit;
@@ -13,11 +14,34 @@ public class TranslationManager : MonoBehaviour
     [SerializeField] private MRUKAnchor.SceneLabels _sceneLabelsToShow;
     [SerializeField] private GameObject _labelPrefab;
     [SerializeField] private WordSuggesterHelper _wordSuggesterHelper;
+    [SerializeField] private Transform _playerTrackingObj;
 
     private List<TranslateObject> _translateObjects = new List<TranslateObject>();
+    private Vector3 _lastUsersPosition;
 
     private string _translationApiUrl = "https://translation.googleapis.com/language/translate/v2?key=";
 
+    private void Start()
+    {
+        _lastUsersPosition = _playerTrackingObj.position;
+    }
+
+    void Update()
+    {
+        // rotate labels based on users position - smoothly
+        if (Vector3.Distance(_lastUsersPosition, _playerTrackingObj.position) > 0.25f)
+        {
+            foreach (var translateObject in _translateObjects)
+            {
+                Vector3 directionToTarget = _playerTrackingObj.position - translateObject.transform.position;
+                Quaternion targetRotation = Quaternion.LookRotation(directionToTarget);
+                translateObject.transform.rotation = Quaternion.Lerp(translateObject.transform.rotation, targetRotation,
+                    3f * Time.deltaTime);
+                _lastUsersPosition = _playerTrackingObj.position;
+            }
+        }
+    }
+    
     /// <summary>
     /// Loads all objects label within the current room.
     /// Called by MRUK on scene loaded event.

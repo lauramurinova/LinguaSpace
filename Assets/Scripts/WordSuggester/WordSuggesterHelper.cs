@@ -29,15 +29,15 @@ public class WordSuggesterHelper : MonoBehaviour
 
         if (relatedWords.Count >= 1)
         {
-            text1.text = relatedWords[0].Item2;
+            text1.text = AppManager.Instance.CapitalizeFirstLetter(relatedWords[0].Item2);
         }
         if (relatedWords.Count >= 2)
         {
-            text2.text = relatedWords[1].Item2;
+            text2.text = AppManager.Instance.CapitalizeFirstLetter(relatedWords[1].Item2);
         }
         if (relatedWords.Count >= 3)
         {
-            text3.text = relatedWords[2].Item2;
+            text3.text = AppManager.Instance.CapitalizeFirstLetter(relatedWords[2].Item2);
         }
     }
 }

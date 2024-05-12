@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -25,10 +23,10 @@ public class TranslateObject : MonoBehaviour
     public void Initiate(string name, WordSuggesterHelper wordSuggesterHelper)
     {
         _name = name;
-        _textLabel.text = name;
+        _textLabel.text = AppManager.Instance.CapitalizeFirstLetter(name);
 
         _wordSuggesterHelper = wordSuggesterHelper;
-        _wordSuggesterHelper.Populate(name, AppManager.Instance.GetCurrentLanguage(), _adjectiveText1, _adjectiveText2, _adjectiveText3);
+        // _wordSuggesterHelper.Populate(name, AppManager.Instance.GetCurrentLanguage(), _adjectiveText1, _adjectiveText2, _adjectiveText3);
         
         _speakButton.onClick.AddListener(delegate { AppManager.Instance.SpeakTTS(name);});
         _listenButton.onClick.AddListener(delegate { AppManager.Instance.ListenSTT(name);});
@@ -42,17 +40,14 @@ public class TranslateObject : MonoBehaviour
             btn.onClick.AddListener(delegate { AppManager.Instance.SpeakTTS(btn.GetComponentInChildren<TextMeshProUGUI>().text);});
         }
         
-
         labelName = name;
-        // _button.onClick.AddListener(delegate { AppManager.Instance.SpeakTTS(name);});
-
         transform.LookAt(Camera.main.transform);
     }
 
     public void ChangeLabel(string name)
     {
         _name = name;
-        _textLabel.text = name;
+        _textLabel.text = AppManager.Instance.CapitalizeFirstLetter(name);
 
         _speakButton.onClick.RemoveAllListeners();
         _listenButton.onClick.RemoveAllListeners();
@@ -67,17 +62,7 @@ public class TranslateObject : MonoBehaviour
             btn.onClick.AddListener(delegate { AppManager.Instance.SpeakTTS(btn.GetComponentInChildren<TextMeshProUGUI>().text);});
         }
         labelName = name;
-        // _button.onClick.RemoveAllListeners();
-        // _button.onClick.AddListener(delegate { AppManager.Instance.SpeakTTS(name);});
 
-    }
-
-    public void SetRelatedWords(List<Tuple<string, string>> relatedWords)
-    {
-        for (int i = 0; i < relatedWords.Count; i++)
-        {
-            _adjectiveButtons[i].GetComponentInChildren<TextMeshProUGUI>().text = relatedWords[0].Item2;
-        }
     }
 
     public string GetLabel()
