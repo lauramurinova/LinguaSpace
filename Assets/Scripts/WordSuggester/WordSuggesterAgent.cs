@@ -22,7 +22,7 @@ public class WordSuggesterAgent : MonoBehaviour
     {
         return Resources.Load<TextAsset>("Security/OpenAI-APIKey").ToString();
     }
-    public void Awake()
+    public void Start()
     {
         var openAIKey = GetApiKey();
         if (openAIKey.Length == 0)
@@ -30,6 +30,11 @@ public class WordSuggesterAgent : MonoBehaviour
             throw new SystemException("Open AI Api key file not found in project: Resources/Security/OpenAI-APIKey.txt");
         }
         openai = new OpenAIApi(openAIKey);
+        if (openai == null)
+        {
+            throw new SystemException("Could not initialze OpenAI API, check network and key");
+        }
+        Debug.Log($"openAI Created Succesfully: {openai}");
     }
 
     static String[] ConvertToStringArr(string input)
@@ -55,7 +60,6 @@ public class WordSuggesterAgent : MonoBehaviour
         return result;
     }
 
-    // async methods can only return limited data types
     public async Task<String> callChatGpt(String queryText)
     {
         var newMessage = new ChatMessage()
@@ -165,7 +169,7 @@ public class WordSuggesterAgent : MonoBehaviour
             Present the results as a plain text file with only two comma-separated columns: 
             word in {fromLanguage}, that {fromLanguage} word translated to {toLanguage} and nothing more. Do not prefix anything";
         String anyGptQuery = $@"
-            You are a thesaurus. Give me {numWords} words in {toLanguage} 
+            You are a language coach. Give me {numWords} words in {toLanguage} 
             commonly used with the {fromLanguage} word {fromWord}.  
             Do not include the original word in the list of 3. 
             Present the results as a plain text file with only two comma-separated columns: 
