@@ -9,16 +9,21 @@ public class PopulateTestCanvas : MonoBehaviour
     [SerializeField] private Button _button;
     [SerializeField] private InputField _input;
 
+    private bool _isFirstTime = true;
     public void Start()
     {
         _button.onClick.AddListener(onClick);
     }
-    
-    public void Awake()
+
+    public void Update()
     {
-     //   _helper.Populate(_input.text, Languages.es);
+        if (_isFirstTime)
+        {
+            _isFirstTime = false;
+            _helper.Populate(_input.text, Languages.es);
+        }
     }
-    
+
     public void onClick()
     {
         _helper.Populate(_input.text, Languages.es);
