@@ -37,7 +37,6 @@ public class AppManager : MonoBehaviour
     [SerializeField] private Toggle[] _languageToggles;
 
     [Header("UI")]
-    [SerializeField] private TMP_Dropdown _languageDropdown;
     [SerializeField] private AnswerFeedback _answerFeedback;
     [SerializeField] private GameObject _correctUIPrefab;
     [SerializeField] private GameObject _tryAgainUIPrefab;

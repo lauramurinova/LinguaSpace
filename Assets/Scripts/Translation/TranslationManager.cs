@@ -12,6 +12,7 @@ public class TranslationManager : MonoBehaviour
     [SerializeField] private MRUK _mruk;
     [SerializeField] private MRUKAnchor.SceneLabels _sceneLabelsToShow;
     [SerializeField] private GameObject _labelPrefab;
+    [SerializeField] private WordSuggesterHelper _wordSuggesterHelper;
 
     private List<TranslateObject> _translateObjects = new List<TranslateObject>();
 
@@ -30,7 +31,7 @@ public class TranslationManager : MonoBehaviour
             if(!_sceneLabelsToShow.ToString().Contains(anchor.GetLabelsAsEnum().ToString())) continue;
             
             var labelObject = Instantiate(_labelPrefab, anchor.transform).GetComponent<TranslateObject>();
-            labelObject.Initiate(GetAnchorLabel(anchor));
+            labelObject.Initiate(GetAnchorLabel(anchor), _wordSuggesterHelper);
             _translateObjects.Add(labelObject);
         }
     }

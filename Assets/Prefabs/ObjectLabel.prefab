@@ -903,6 +903,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1d12111fcdc9de34eaa30678d0e0170e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  labelName: 
   _textLabel: {fileID: 3654206315823804003}
   _speakButton: {fileID: 510233338357194738}
   _listenButton: {fileID: 611636751272369484}
@@ -911,6 +912,9 @@ MonoBehaviour:
   - {fileID: 1113292363640879293}
   - {fileID: 1087735613413906766}
   - {fileID: 3489006971564876017}
+  _adjectiveText1: {fileID: 1261409359024881046}
+  _adjectiveText2: {fileID: 7016879717540979966}
+  _adjectiveText3: {fileID: 2377419380509483728}
 --- !u!114 &8245823683995782137
 MonoBehaviour:
   m_ObjectHideFlags: 0
