@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Linq;
 using TMPro;
 using UnityEngine;
@@ -52,6 +53,8 @@ public class AppManager : MonoBehaviour
     
     private Languages _currentLanguage = Languages.en;
     private static AppManager _instance;
+    private bool isSpeaking = false;
+
     
     private string[] _congratulationTexts = new[]
     {
@@ -66,6 +69,7 @@ public class AppManager : MonoBehaviour
         "It's not quite right, you can try again!",
         "It's pronounced a bit differently, we can practice more together!"
     };
+
 
     private void Awake()
     {
@@ -136,7 +140,16 @@ public class AppManager : MonoBehaviour
     /// </summary>
     public void SpeakTTS(string text)
     {
+        if (isSpeaking) return;
+        isSpeaking = true;
         _currentTextToSpeechManager.Speak(text);
+        StartCoroutine(isSpeakingToggle(1.3f));
+    }
+
+    private IEnumerator isSpeakingToggle(float duration)
+    {
+        yield return new WaitForSeconds(duration);
+        isSpeaking = false;
     }
 
     /// <summary>
