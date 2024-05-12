@@ -32,9 +32,14 @@ public class AppManager : MonoBehaviour
     
     [Header("UI")]
     [SerializeField] private TMP_Dropdown _languageDropdown;
-    [SerializeField] private AnswerFeedback answerFeedback;
+    [SerializeField] private AnswerFeedback _answerFeedback;
     [SerializeField] private GameObject _correctUIPrefab;
     [SerializeField] private GameObject _tryAgainUIPrefab;
+    
+    [Header("SFX")]
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip _correctSFX;
+    [SerializeField] private AudioClip _tryAgainSFX;
     
     // standard languages are for free - uses WIT.AI
     [SerializeField] private Languages[] _standardLanguages;
@@ -150,7 +155,8 @@ public class AppManager : MonoBehaviour
     public void GivePositiveFeedbackToUser()
     {
         _standardTextToSpeechManager.Speak(_congratulationTexts[UnityEngine.Random.Range(0, _congratulationTexts.Length)]);
-        answerFeedback.ShowAnswerUI(_correctUIPrefab);
+        _answerFeedback.ShowAnswerUI(_correctUIPrefab);
+        PlaySFX(_correctSFX);
     }
     
     /// <summary>
@@ -159,8 +165,16 @@ public class AppManager : MonoBehaviour
     public void GiveNegativeFeedbackToUser()
     {
         _standardTextToSpeechManager.Speak(_tryAgainTexts[UnityEngine.Random.Range(0, _tryAgainTexts.Length)]);
-        answerFeedback.ShowAnswerUI(_tryAgainUIPrefab);
-
+        _answerFeedback.ShowAnswerUI(_tryAgainUIPrefab);
+        PlaySFX(_tryAgainSFX);
+    }
+    
+    public void PlaySFX(AudioClip soundEffect)
+    {
+        if (audioSource != null && soundEffect != null)
+        {
+            audioSource.PlayOneShot(soundEffect);
+        }
     }
     
     /// <summary>
