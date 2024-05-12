@@ -2,6 +2,7 @@
   "dependencies": {
     "com.meta.xr.sdk.all": "64.0.0",
     "com.meta.xr.sdk.interaction.ovr.samples": "64.0.0",
+    "com.srcnalt.openai-unity": "https://github.com/srcnalt/OpenAI-Unity.git",
     "com.unity.2d.sprite": "1.0.0",
     "com.unity.collab-proxy": "2.3.1",
     "com.unity.ide.rider": "3.0.28",

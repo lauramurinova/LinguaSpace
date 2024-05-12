@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Linq;
 using TMPro;
 using UnityEngine;
@@ -32,7 +33,20 @@ public class AppManager : MonoBehaviour
     [SerializeField] private SpeechToTextManager _standardSpeechToTextManager;
     [SerializeField] private SpeechToTextManager _premiumSpeechToTextManager;
     
+
     [SerializeField] private Toggle[] _languageToggles;
+
+    [Header("UI")]
+    [SerializeField] private TMP_Dropdown _languageDropdown;
+    [SerializeField] private AnswerFeedback _answerFeedback;
+    [SerializeField] private GameObject _correctUIPrefab;
+    [SerializeField] private GameObject _tryAgainUIPrefab;
+    
+    [Header("SFX")]
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip _correctSFX;
+    [SerializeField] private AudioClip _tryAgainSFX;
+
     
     // standard languages are for free - uses WIT.AI
     [SerializeField] private Languages[] _standardLanguages;
@@ -45,6 +59,8 @@ public class AppManager : MonoBehaviour
     
     private Languages _currentLanguage = Languages.en;
     private static AppManager _instance;
+    private bool isSpeaking = false;
+
     
     private string[] _congratulationTexts = new[]
     {
@@ -59,6 +75,7 @@ public class AppManager : MonoBehaviour
         "It's not quite right, you can try again!",
         "It's pronounced a bit differently, we can practice more together!"
     };
+
 
     private void Awake()
     {
@@ -124,7 +141,16 @@ public class AppManager : MonoBehaviour
     /// </summary>
     public void SpeakTTS(string text)
     {
+        if (isSpeaking) return;
+        isSpeaking = true;
         _currentTextToSpeechManager.Speak(text);
+        StartCoroutine(isSpeakingToggle(1.3f));
+    }
+
+    private IEnumerator isSpeakingToggle(float duration)
+    {
+        yield return new WaitForSeconds(duration);
+        isSpeaking = false;
     }
     
     public void SpeakTTS(GameObject obj)
@@ -153,6 +179,8 @@ public class AppManager : MonoBehaviour
     public void GivePositiveFeedbackToUser()
     {
         _standardTextToSpeechManager.Speak(_congratulationTexts[UnityEngine.Random.Range(0, _congratulationTexts.Length)]);
+        _answerFeedback.ShowAnswerUI(_correctUIPrefab);
+        PlaySFX(_correctSFX);
     }
     
     /// <summary>
@@ -161,6 +189,16 @@ public class AppManager : MonoBehaviour
     public void GiveNegativeFeedbackToUser()
     {
         _standardTextToSpeechManager.Speak(_tryAgainTexts[UnityEngine.Random.Range(0, _tryAgainTexts.Length)]);
+        _answerFeedback.ShowAnswerUI(_tryAgainUIPrefab);
+        PlaySFX(_tryAgainSFX);
+    }
+    
+    public void PlaySFX(AudioClip soundEffect)
+    {
+        if (audioSource != null && soundEffect != null)
+        {
+            audioSource.PlayOneShot(soundEffect);
+        }
     }
     
     /// <summary>
