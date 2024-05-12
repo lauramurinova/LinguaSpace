@@ -4,7 +4,9 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.UIElements;
 using Random = System.Random;
+using Toggle = UnityEngine.UI.Toggle;
 
 [Serializable]
 public enum Languages
@@ -31,6 +33,9 @@ public class AppManager : MonoBehaviour
     [SerializeField] private SpeechToTextManager _standardSpeechToTextManager;
     [SerializeField] private SpeechToTextManager _premiumSpeechToTextManager;
     
+
+    [SerializeField] private Toggle[] _languageToggles;
+
     [Header("UI")]
     [SerializeField] private TMP_Dropdown _languageDropdown;
     [SerializeField] private AnswerFeedback _answerFeedback;
@@ -41,6 +46,7 @@ public class AppManager : MonoBehaviour
     [SerializeField] private AudioSource audioSource;
     [SerializeField] private AudioClip _correctSFX;
     [SerializeField] private AudioClip _tryAgainSFX;
+
     
     // standard languages are for free - uses WIT.AI
     [SerializeField] private Languages[] _standardLanguages;
@@ -48,8 +54,8 @@ public class AppManager : MonoBehaviour
     // premium languages should be for subscription - uses Google API
     [SerializeField] private Languages[] _premiumLanguages;
 
-    private TextToSpeechManager _currentTextToSpeechManager;
-    private SpeechToTextManager _currentSpeechToTextManager;
+    [SerializeField] private TextToSpeechManager _currentTextToSpeechManager;
+    [SerializeField] private SpeechToTextManager _currentSpeechToTextManager;
     
     private Languages _currentLanguage = Languages.en;
     private static AppManager _instance;
@@ -89,14 +95,8 @@ public class AppManager : MonoBehaviour
         SetCurrentManagers();
     }
 
-    /// <summary>
-    /// Called by the languages dropdown menu.
-    /// Handles the switch between value and language enum, assigns the currently selected language.
-    /// </summary>
-    public void OnLanguageDropdownValueChanged(int index)
+    public void ChangeLanguage(string selectedLanguage)
     {
-        string selectedLanguage = _languageDropdown.options[index].text;
-
         if (selectedLanguage.Contains("Spanish"))
         {
             _translationManager.ChangeLabels(Languages.es);
@@ -123,6 +123,7 @@ public class AppManager : MonoBehaviour
             SetCurrentLanguage(Languages.bg);
         }
         SetCurrentManagers();
+        Debug.Log("Changed to " + GetCurrentLanguage());
     }
     
     /// <summary>
@@ -151,15 +152,25 @@ public class AppManager : MonoBehaviour
         yield return new WaitForSeconds(duration);
         isSpeaking = false;
     }
+    
+    public void SpeakTTS(GameObject obj)
+    {
+        _currentTextToSpeechManager.Speak(obj.name);
+    }
 
     /// <summary>
     /// Called to initiate speech to text.
     /// Api to use is based on the language definiton.
     /// </summary>
+    public void ListenSTT(string nameToRecognize)
+    {
+        Debug.Log("I AM HERE");
+        _currentSpeechToTextManager.StartRecording(nameToRecognize);
+    }
+    
     public void ListenSTT()
     {
-        // TODO - when Object label has the listen button update the string according to that
-        _currentSpeechToTextManager.StartRecording("TEXT FROM LABEL THAT USER WANTS TO CHECK THE PRONUNCIATION OF");
+        _currentSpeechToTextManager.StartRecording("");
     }
 
     /// <summary>

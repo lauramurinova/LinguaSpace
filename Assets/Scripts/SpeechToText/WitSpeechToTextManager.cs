@@ -9,24 +9,17 @@ public class WitSpeechToTextManager : SpeechToTextManager
 {
     [SerializeField] private AppVoiceExperience _appVoice;
     [SerializeField] private TextMeshProUGUI _voiceText;
-    [SerializeField] private Button _voiceButton;
-
-    [Header("UI")] 
-    [SerializeField] private Color _microphoneDisabledColor = Color.red;
-    [SerializeField] private Color _microphoneEnabledColor = Color.green;
-    [SerializeField] private TextMeshProUGUI _listeningText;
+    [SerializeField] private GameObject _voiceButtonBorder;
 
     public override void StartRecording(string textToRecognize)
     {
         _appVoice.Activate();
-        _voiceButton.GetComponent<Image>().color = _microphoneEnabledColor;
-        _listeningText.gameObject.SetActive(true);
+        _voiceButtonBorder.SetActive(true);
         _appVoice.VoiceEvents.OnFullTranscription.AddListener(transcription =>
         {
             HandleSpeechRecognitionResponse(textToRecognize, transcription);
             _appVoice.Deactivate();
-            _voiceButton.GetComponent<Image>().color = _microphoneDisabledColor;
-            _listeningText.gameObject.SetActive(false);
+            _voiceButtonBorder.SetActive(false);
             _appVoice.VoiceEvents.OnFullTranscription.RemoveAllListeners();
         });
     }
@@ -35,8 +28,10 @@ public class WitSpeechToTextManager : SpeechToTextManager
     {
         _voiceText.text = recognizedText;
         
+        if(textToRecognize == "") return;
+        
         // user got it right
-        if (textToRecognize == recognizedText)
+        if (textToRecognize.ToLower() == recognizedText.ToLower())
         {
             AppManager.Instance.GivePositiveFeedbackToUser();
         }
