@@ -3,6 +3,7 @@ using System.Collections;
 using Newtonsoft.Json.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 
@@ -28,17 +29,17 @@ public class GoogleSpeechToTextManager : SpeechToTextManager
     /// <summary>
     /// Starts speech recognition.
     /// </summary>
-    public override void StartRecording()
+    public override void StartRecording(string textToRecognize)
     {
         if (_recordingCoroutine != null) return;
         
-        _recordingCoroutine = StartCoroutine(RecordAndRecognizeSpeech());
+        _recordingCoroutine = StartCoroutine(RecordAndRecognizeSpeech(textToRecognize));
     }
 
     /// <summary>
     /// Handles activating the microphone and starting the speech recognition (through sending REST API to Google)
     /// </summary>
-    private IEnumerator RecordAndRecognizeSpeech()
+    private IEnumerator RecordAndRecognizeSpeech(string textToRecognize)
     {
         var audioClip = ActivateMicrophone();
 
@@ -48,7 +49,7 @@ public class GoogleSpeechToTextManager : SpeechToTextManager
         
         Action<string> action = (recognizedText) =>
         {
-            _translatedTextUI.text = recognizedText;
+            HandleSpeechRecognitionResponse(textToRecognize, recognizedText);
         };
 
         if (_speechRecognitionCoroutine == null)
@@ -57,6 +58,21 @@ public class GoogleSpeechToTextManager : SpeechToTextManager
         }
 
         _recordingCoroutine = null;
+    }
+
+    private void HandleSpeechRecognitionResponse(string textToRecognize, string recognizedText)
+    {
+        _translatedTextUI.text = recognizedText;
+        // user got it right
+        if (textToRecognize == recognizedText)
+        {
+            AppManager.Instance.GivePositiveFeedbackToUser();
+        }
+        // user didnt get it right
+        else
+        {
+            AppManager.Instance.GiveNegativeFeedbackToUser();
+        }
     }
 
     /// <summary>

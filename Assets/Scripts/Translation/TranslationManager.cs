@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using Meta.XR.MRUtilityKit;
 using Newtonsoft.Json.Linq;
-using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Networking;
@@ -45,8 +44,7 @@ public class TranslationManager : MonoBehaviour
         foreach (var translateObject in _translateObjects)
         {
             var translateEvent = new UnityEvent<string>();
-            StartCoroutine(TranslateText(translateEvent, translateObject.GetLabel(),
-                AppManager.Instance.GetCurrentLanguage(), desiredLanguage));
+            TranslateText(translateEvent, translateObject.GetLabel(), AppManager.Instance.GetCurrentLanguage(), desiredLanguage);
             translateEvent.AddListener(translatedText =>
             {
                 translateObject.ChangeLabel(translatedText);
@@ -56,10 +54,19 @@ public class TranslationManager : MonoBehaviour
     }
 
     /// <summary>
+    /// Translates the given text to a given desired language.
+    /// Response is sent through Unity Event in a string.
+    /// </summary>
+    public void TranslateText(UnityEvent<string> translateEvent, string text, Languages originLanguage, Languages desiredLanguage)
+    {
+        StartCoroutine(TranslateTextCor(translateEvent, text, originLanguage, desiredLanguage));
+    }
+
+    /// <summary>
     /// Handles sending REST API to Googles Translation API based on the text provided and original language and desired language enum.
     /// On finishing the translation, it invokes the translate event.
     /// </summary>
-    public IEnumerator TranslateText(UnityEvent<string> translateEvent, string textToTranslate, Languages originLanguage, Languages desiredLanguage)
+    private IEnumerator TranslateTextCor(UnityEvent<string> translateEvent, string textToTranslate, Languages originLanguage, Languages desiredLanguage)
     {
         string url =  _translationApiUrl + GetApiKey();
         string jsonRequestBody = "{\"q\":\"" + textToTranslate + "\",\"source\":\"" + originLanguage + "\",\"target\":\"" + desiredLanguage + "\"}";
