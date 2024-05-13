@@ -101,6 +101,11 @@ public class TranslateObject : MonoBehaviour
         SetAdjectiveButtonsListeners();
     }
 
+    public void SetLastSelectedWord(string text)
+    {
+        _lastSelectedWord = text;
+    }
+
     private void SetAdjectiveButtonsListeners()
     {
         for(int i = 0; i < _adjectiveButtons.Length; i++)

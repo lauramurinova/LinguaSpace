@@ -59,7 +59,7 @@ public class GoogleSpeechToTextManager : SpeechToTextManager
 
     private void HandleSpeechRecognitionResponse(string textToRecognize, string recognizedText)
     {
-        _translatedTextUI.text = recognizedText;
+        _translatedTextUI.text = AppManager.Instance.CapitalizeFirstLetter(recognizedText);
         
         if(textToRecognize == "") return;
         

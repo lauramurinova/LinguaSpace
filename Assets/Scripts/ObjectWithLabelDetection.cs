@@ -46,6 +46,7 @@ public class ObjectWithLabelDetection : MonoBehaviour
             var labelObject = parentObject.GetComponentInChildren<TranslateObject>();
             if (!labelObject) continue;
 
+            labelObject.SetLastSelectedWord(labelObject.labelName);
             _appManager.SpeakTTS(labelObject.labelName);
             Debug.Log($"SPOKEN WORDS: {this.gameObject.name} {labelObject.labelName}");
 

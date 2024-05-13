@@ -26,7 +26,7 @@ public class WitSpeechToTextManager : SpeechToTextManager
     
     private void HandleSpeechRecognitionResponse(string textToRecognize, string recognizedText)
     {
-        _voiceText.text = recognizedText;
+        _voiceText.text = AppManager.Instance.CapitalizeFirstLetter(recognizedText);
         
         if(textToRecognize == "") return;
         
