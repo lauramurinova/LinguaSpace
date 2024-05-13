@@ -1,11 +1,7 @@
-using System;
 using System.Collections;
 using Meta.XR.MRUtilityKit;
-using NaughtyAttributes;
-using System.Collections.Generic;
 using Oculus.Interaction;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -19,8 +15,6 @@ public class TranslateObject : MonoBehaviour
     [SerializeField] private Button _button;
     [SerializeField] private Material _highlightMaterial;
     
-    
-    private string _name = "";
     private Renderer _renderer;
     private Transform _parentObject;
     private bool _isTouchingObject;
@@ -45,29 +39,6 @@ public class TranslateObject : MonoBehaviour
     private float _timer = 1f;
     private bool _enable = false;
     private string _lastSelectedWord = "";
-
-
-    
-
-    
-
-
-    public void Update()
-    {
-        if (!_renderer || !_parentObject)
-        {
-            SetMaterialParams();
-        }
-        
-        if (_isTouchingObject)
-        {
-           SetMaterial(_renderer, _highlightMaterial );
-        }
-        else if (!_isTouchingObject && _renderer)
-        {
-            SetMaterial(_renderer, _defaultMaterial);
-        }
-    }
     
     public void Initiate(string name, WordSuggesterHelper wordSuggesterHelper)
 
@@ -84,6 +55,20 @@ public class TranslateObject : MonoBehaviour
 
     private void Update()
     {
+        if (!_renderer || !_parentObject)
+        {
+            SetMaterialParams();
+        }
+        
+        if (_isTouchingObject)
+        {
+            SetMaterial(_renderer, _highlightMaterial );
+        }
+        else if (!_isTouchingObject && _renderer)
+        {
+            SetMaterial(_renderer, _defaultMaterial);
+        }
+        
         if (_toggleAdjectives > 0)
         {
             _timer += Time.deltaTime;
