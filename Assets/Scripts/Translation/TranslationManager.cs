@@ -1,7 +1,9 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Meta.XR.MRUtilityKit;
 using Newtonsoft.Json.Linq;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Networking;
@@ -12,11 +14,48 @@ public class TranslationManager : MonoBehaviour
     [SerializeField] private MRUK _mruk;
     [SerializeField] private MRUKAnchor.SceneLabels _sceneLabelsToShow;
     [SerializeField] private GameObject _labelPrefab;
+    [SerializeField] private WordSuggesterHelper _wordSuggesterHelper;
+    [SerializeField] private Transform _playerTrackingObj;
+
+    [Header("UI")] 
+    [SerializeField] private TextMeshProUGUI _lastSelectedWordText;
+    [SerializeField] private GameObject _noSelectedWord;
+    [SerializeField] private GameObject _selectedWord;
 
     private List<TranslateObject> _translateObjects = new List<TranslateObject>();
+    private Vector3 _lastUsersPosition;
+    private float _rotationTimer = 0f;
 
     private string _translationApiUrl = "https://translation.googleapis.com/language/translate/v2?key=";
 
+    private void Start()
+    {
+        _lastUsersPosition = _playerTrackingObj.position;
+    }
+
+    void Update()
+    {
+        // rotate labels based on users position - smoothly
+        if (Vector3.Distance(_lastUsersPosition, _playerTrackingObj.position) > 0.5f)
+        {
+            foreach (var translateObject in _translateObjects)
+            {
+                Vector3 directionToTarget = _playerTrackingObj.position - translateObject.transform.position;
+                Quaternion targetRotation = Quaternion.LookRotation(directionToTarget);
+                translateObject.transform.rotation = Quaternion.Lerp(translateObject.transform.rotation, targetRotation,
+                    3f * Time.deltaTime);
+            }
+
+            if (_rotationTimer > 3f)
+            {
+                _lastUsersPosition = _playerTrackingObj.position;
+                _rotationTimer = 0f;
+            }
+
+            _rotationTimer += Time.deltaTime;
+        }
+    }
+    
     /// <summary>
     /// Loads all objects label within the current room.
     /// Called by MRUK on scene loaded event.
@@ -30,9 +69,22 @@ public class TranslationManager : MonoBehaviour
             if(!_sceneLabelsToShow.ToString().Contains(anchor.GetLabelsAsEnum().ToString())) continue;
             
             var labelObject = Instantiate(_labelPrefab, anchor.transform).GetComponent<TranslateObject>();
-            labelObject.Initiate(GetAnchorLabel(anchor));
+            labelObject.Initiate(GetAnchorLabel(anchor), _wordSuggesterHelper);
+            labelObject.selectedObject.AddListener(ChangeLastSelectedObject);
             _translateObjects.Add(labelObject);
         }
+    }
+
+    private void ChangeLastSelectedObject(TranslateObject translateObject)
+    {
+        _lastSelectedWordText.text = AppManager.Instance.CapitalizeFirstLetter(translateObject.GetLastSelectedWord());
+        _noSelectedWord.SetActive(false);
+        _selectedWord.SetActive(true);
+    }
+
+    public string GetSelectedObjectName()
+    {
+        return _lastSelectedWordText.text;
     }
 
     /// <summary>
@@ -51,6 +103,13 @@ public class TranslationManager : MonoBehaviour
                 translateEvent.RemoveAllListeners();
             });
         }
+        
+        var translateEvent2 = new UnityEvent<string>();
+        TranslateText(translateEvent2, GetSelectedObjectName(), AppManager.Instance.GetCurrentLanguage(), desiredLanguage);
+        translateEvent2.AddListener(translatedText =>
+        {
+            _lastSelectedWordText.text = AppManager.Instance.CapitalizeFirstLetter(translatedText);
+        });
     }
 
     /// <summary>

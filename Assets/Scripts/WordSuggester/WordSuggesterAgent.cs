@@ -73,14 +73,14 @@ public class WordSuggesterAgent : MonoBehaviour
         // Complete the instruction
         var completionResponse = await openai.CreateChatCompletion(new CreateChatCompletionRequest()
         {
-            Model = "gpt-4-turbo",
+            Model = "gpt-3.5-turbo",
             Messages = newMessages
         });
 
         if (completionResponse.Choices != null && completionResponse.Choices.Count > 0)
         {
             var response = completionResponse.Choices[0].Message;
-            Debug.Log($"Server response: {completionResponse}");
+            // Debug.Log($"Server response: {completionResponse}");
             return response.Content;
         }
         else
@@ -110,7 +110,7 @@ public class WordSuggesterAgent : MonoBehaviour
         string[] lines = multilineString.Split('\n');
         foreach (string line in lines)
         {
-            Debug.Log(line);
+            // Debug.Log(line);
         }
     }
     

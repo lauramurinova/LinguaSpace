@@ -4,7 +4,9 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.UIElements;
 using Random = System.Random;
+using Toggle = UnityEngine.UI.Toggle;
 
 [Serializable]
 public enum Languages
@@ -31,8 +33,10 @@ public class AppManager : MonoBehaviour
     [SerializeField] private SpeechToTextManager _standardSpeechToTextManager;
     [SerializeField] private SpeechToTextManager _premiumSpeechToTextManager;
     
+
+    [SerializeField] private Toggle[] _languageToggles;
+
     [Header("UI")]
-    [SerializeField] private TMP_Dropdown _languageDropdown;
     [SerializeField] private AnswerFeedback _answerFeedback;
     [SerializeField] private GameObject _correctUIPrefab;
     [SerializeField] private GameObject _tryAgainUIPrefab;
@@ -41,6 +45,7 @@ public class AppManager : MonoBehaviour
     [SerializeField] private AudioSource audioSource;
     [SerializeField] private AudioClip _correctSFX;
     [SerializeField] private AudioClip _tryAgainSFX;
+
     
     // standard languages are for free - uses WIT.AI
     [SerializeField] private Languages[] _standardLanguages;
@@ -48,26 +53,37 @@ public class AppManager : MonoBehaviour
     // premium languages should be for subscription - uses Google API
     [SerializeField] private Languages[] _premiumLanguages;
 
-    private TextToSpeechManager _currentTextToSpeechManager;
-    private SpeechToTextManager _currentSpeechToTextManager;
+    [SerializeField] private TextToSpeechManager _currentTextToSpeechManager;
+    [SerializeField] private SpeechToTextManager _currentSpeechToTextManager;
+
+    [SerializeField] private Transform _playerTrackingObj;
     
     private Languages _currentLanguage = Languages.en;
     private static AppManager _instance;
     private bool isSpeaking = false;
+    private Vector3 _lastUserPosition;
 
     
     private string[] _congratulationTexts = new[]
     {
         "Congratulations, you got it right!",
         "Good job!",
-        "Nice work, you got it!"
+        "Nice, you got it!",
+        "Well done, you nailed it!",
+        "Excellent job, spot on!",
+        "Fantastic, that was on point!",
+        "Wonderful, you've mastered it!"
     };
     
     private string[] _tryAgainTexts = new[]
     {
         "You didn't get it this time, try again!",
         "It's not quite right, you can try again!",
-        "It's pronounced a bit differently, we can practice more together!"
+        "It's pronounced a bit differently, we can practice more together!",
+        "Give it another shot, you're almost there!",
+        "Close, but not quite. Let's give it another go!",
+        "Not there yet, but keep trying—you're making progress!",
+        "Keep practicing, you're on the right track!"
     };
 
 
@@ -87,16 +103,14 @@ public class AppManager : MonoBehaviour
     private void Start()
     {
         SetCurrentManagers();
+        _lastUserPosition = _playerTrackingObj.position;
     }
 
     /// <summary>
-    /// Called by the languages dropdown menu.
-    /// Handles the switch between value and language enum, assigns the currently selected language.
+    /// Changes the apps labels to desired language.
     /// </summary>
-    public void OnLanguageDropdownValueChanged(int index)
+    public void ChangeLanguage(string selectedLanguage)
     {
-        string selectedLanguage = _languageDropdown.options[index].text;
-
         if (selectedLanguage.Contains("Spanish"))
         {
             _translationManager.ChangeLabels(Languages.es);
@@ -123,6 +137,38 @@ public class AppManager : MonoBehaviour
             SetCurrentLanguage(Languages.bg);
         }
         SetCurrentManagers();
+        Debug.Log("Changed to " + GetCurrentLanguage());
+    }
+
+    public void SpeakLastSelectedObject()
+    {
+        SpeakTTS(_translationManager.GetSelectedObjectName());
+    }
+    
+    /// <summary>
+    /// Returns the parameter string with the first letter capitalized.
+    /// </summary>
+    public string CapitalizeFirstLetter(string input)
+    {
+        if (string.IsNullOrEmpty(input))
+            return input;
+
+        // Convert the entire string to lowercase
+        string lowerCaseInput = input.ToLower();
+
+        // Capitalize the first letter
+        char firstChar = char.ToUpper(lowerCaseInput[0]);
+        
+        // Combine the first letter with the rest of the string
+        string result = firstChar + lowerCaseInput.Substring(1);
+
+        if (firstChar == ' ')
+        {
+            firstChar = char.ToUpper(lowerCaseInput[1]);
+            result = firstChar + lowerCaseInput.Substring(2);
+        }
+
+        return result;
     }
     
     /// <summary>
@@ -151,15 +197,29 @@ public class AppManager : MonoBehaviour
         yield return new WaitForSeconds(duration);
         isSpeaking = false;
     }
+    
+    public void SpeakTTS(GameObject obj)
+    {
+        _currentTextToSpeechManager.Speak(obj.name);
+    }
 
     /// <summary>
     /// Called to initiate speech to text.
     /// Api to use is based on the language definiton.
     /// </summary>
+    public void ListenSTT(string nameToRecognize)
+    {
+        _currentSpeechToTextManager.StartRecording(nameToRecognize);
+    }
+
+    public void ListenSTTLastSelectedObject()
+    {
+        ListenSTT(_translationManager.GetSelectedObjectName());
+    }
+    
     public void ListenSTT()
     {
-        // TODO - when Object label has the listen button update the string according to that
-        _currentSpeechToTextManager.StartRecording("TEXT FROM LABEL THAT USER WANTS TO CHECK THE PRONUNCIATION OF");
+        _currentSpeechToTextManager.StartRecording("");
     }
 
     /// <summary>

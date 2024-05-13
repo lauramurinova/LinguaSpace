@@ -9,9 +9,6 @@ using UnityEngine;
 public class WordSuggesterHelper : MonoBehaviour
 {
     [SerializeField] private WordSuggesterAgent _agent;
-    [SerializeField] private TMP_Text _text1;
-    [SerializeField] private TMP_Text _text2;
-    [SerializeField] private TMP_Text _text3;
     
     private Dictionary<Languages, String> langToStringName = new Dictionary<Languages, string>()
     {
@@ -22,7 +19,7 @@ public class WordSuggesterHelper : MonoBehaviour
         { Languages.hu, "Hungarian" }
     };
     
-    async public void Populate(String wordInEnglish, Languages targetLanguage)
+    async public void Populate(String wordInEnglish, Languages targetLanguage, TextMeshProUGUI text1, TextMeshProUGUI text2, TextMeshProUGUI text3)
     {
         String languageString = langToStringName[targetLanguage];
         var relatedWords =  await 
@@ -32,15 +29,15 @@ public class WordSuggesterHelper : MonoBehaviour
 
         if (relatedWords.Count >= 1)
         {
-            _text1.text = relatedWords[0].Item2;
+            text1.text = AppManager.Instance.CapitalizeFirstLetter(relatedWords[0].Item2);
         }
         if (relatedWords.Count >= 2)
         {
-            _text2.text = relatedWords[1].Item2;
+            text2.text = AppManager.Instance.CapitalizeFirstLetter(relatedWords[1].Item2);
         }
         if (relatedWords.Count >= 3)
         {
-            _text3.text = relatedWords[2].Item2;
+            text3.text = AppManager.Instance.CapitalizeFirstLetter(relatedWords[2].Item2);
         }
     }
 }
