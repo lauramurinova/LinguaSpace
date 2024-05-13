@@ -139,6 +139,11 @@ public class AppManager : MonoBehaviour
         SetCurrentManagers();
         Debug.Log("Changed to " + GetCurrentLanguage());
     }
+
+    public void SpeakLastSelectedObject()
+    {
+        SpeakTTS(_translationManager.GetSelectedObjectName());
+    }
     
     /// <summary>
     /// Returns the parameter string with the first letter capitalized.
@@ -205,6 +210,11 @@ public class AppManager : MonoBehaviour
     public void ListenSTT(string nameToRecognize)
     {
         _currentSpeechToTextManager.StartRecording(nameToRecognize);
+    }
+
+    public void ListenSTTLastSelectedObject()
+    {
+        ListenSTT(_translationManager.GetSelectedObjectName());
     }
     
     public void ListenSTT()

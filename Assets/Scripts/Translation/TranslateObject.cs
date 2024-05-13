@@ -4,10 +4,13 @@ using Oculus.Interaction;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 public class TranslateObject : MonoBehaviour
 {
+    public UnityEvent<TranslateObject> selectedObject = new UnityEvent<TranslateObject>();
+    
     public string labelName;
     [SerializeField] private TextMeshProUGUI _textLabel;
     [SerializeField] private Button _speakButton;
@@ -104,6 +107,12 @@ public class TranslateObject : MonoBehaviour
     public void SetLastSelectedWord(string text)
     {
         _lastSelectedWord = text;
+        selectedObject.Invoke(this);
+    }
+    
+    public string GetLastSelectedWord()
+    {
+        return _lastSelectedWord;
     }
 
     private void SetAdjectiveButtonsListeners()
@@ -115,8 +124,8 @@ public class TranslateObject : MonoBehaviour
             var index = i;
             _adjectiveButtons[i].onClick.AddListener(delegate
             {
-                AppManager.Instance.SpeakTTS(btn.GetComponentInChildren<TextMeshProUGUI>().text);
-                _lastSelectedWord = btn.GetComponentInChildren<TextMeshProUGUI>().text + " " + _name;
+                AppManager.Instance.SpeakTTS(btn.GetComponentInChildren<TextMeshProUGUI>().text + " " + _name);
+                SetLastSelectedWord(btn.GetComponentInChildren<TextMeshProUGUI>().text + " " + _name);
                 _adjectiveButtonsImages[index].enabled = true;
                 for(int j = 0; j < _adjectiveButtonsImages.Length; j++)
                 {
@@ -160,7 +169,7 @@ public class TranslateObject : MonoBehaviour
         });
         _labelButton.onClick.AddListener(delegate
         {
-            _lastSelectedWord = name;
+            SetLastSelectedWord(name);
             for(int j = 0; j < _adjectiveButtonsImages.Length; j++)
             {
                 _adjectiveButtonsImages[j].enabled = false;
