@@ -18,6 +18,7 @@ public class TranslationManager : MonoBehaviour
 
     private List<TranslateObject> _translateObjects = new List<TranslateObject>();
     private Vector3 _lastUsersPosition;
+    private float _rotationTimer = 0f;
 
     private string _translationApiUrl = "https://translation.googleapis.com/language/translate/v2?key=";
 
@@ -29,7 +30,7 @@ public class TranslationManager : MonoBehaviour
     void Update()
     {
         // rotate labels based on users position - smoothly
-        if (Vector3.Distance(_lastUsersPosition, _playerTrackingObj.position) > 0.25f)
+        if (Vector3.Distance(_lastUsersPosition, _playerTrackingObj.position) > 0.5f)
         {
             foreach (var translateObject in _translateObjects)
             {
@@ -37,8 +38,15 @@ public class TranslationManager : MonoBehaviour
                 Quaternion targetRotation = Quaternion.LookRotation(directionToTarget);
                 translateObject.transform.rotation = Quaternion.Lerp(translateObject.transform.rotation, targetRotation,
                     3f * Time.deltaTime);
-                _lastUsersPosition = _playerTrackingObj.position;
             }
+
+            if (_rotationTimer > 3f)
+            {
+                _lastUsersPosition = _playerTrackingObj.position;
+                _rotationTimer = 0f;
+            }
+
+            _rotationTimer += Time.deltaTime;
         }
     }
     

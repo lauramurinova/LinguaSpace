@@ -204,7 +204,6 @@ public class AppManager : MonoBehaviour
     /// </summary>
     public void ListenSTT(string nameToRecognize)
     {
-        Debug.Log("I AM HERE");
         _currentSpeechToTextManager.StartRecording(nameToRecognize);
     }
     

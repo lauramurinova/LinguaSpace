@@ -80,7 +80,7 @@ public class WordSuggesterAgent : MonoBehaviour
         if (completionResponse.Choices != null && completionResponse.Choices.Count > 0)
         {
             var response = completionResponse.Choices[0].Message;
-            Debug.Log($"Server response: {completionResponse}");
+            // Debug.Log($"Server response: {completionResponse}");
             return response.Content;
         }
         else
@@ -110,7 +110,7 @@ public class WordSuggesterAgent : MonoBehaviour
         string[] lines = multilineString.Split('\n');
         foreach (string line in lines)
         {
-            Debug.Log(line);
+            // Debug.Log(line);
         }
     }
     

@@ -64,7 +64,7 @@ public class GoogleSpeechToTextManager : SpeechToTextManager
         if(textToRecognize == "") return;
         
         // user got it right
-        if (textToRecognize.ToLower() == recognizedText.ToLower())
+        if (textToRecognize.Replace("-", "").Replace(" ", "").ToLower() == recognizedText.Replace("-", "").Replace(" ", "").ToLower())
         {
             AppManager.Instance.GivePositiveFeedbackToUser();
         }

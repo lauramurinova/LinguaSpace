@@ -12,6 +12,7 @@ Library: C:\Users\laura\Documents\XR-Bootcamp\LinguaSpace\Temp\BurstOutput\tempb
 --assembly-defines=Assembly-CSharp-firstpass;
 --assembly-defines=Assembly-CSharp;
 --assembly-defines=AssistantCoreSDKRuntime;
+--assembly-defines=DOTween;
 --assembly-defines=Meta.Voice.Samples.Dictation;
 --assembly-defines=Meta.VoiceSDK.Mic.Common;
 --assembly-defines=Meta.VoiceSDK.Mic.Other;
@@ -29,8 +30,10 @@ Library: C:\Users\laura\Documents\XR-Bootcamp\LinguaSpace\Temp\BurstOutput\tempb
 --assembly-defines=Newtonsoft.Json;
 --assembly-defines=Oculus.Interaction;
 --assembly-defines=Oculus.Interaction.OVR;
+--assembly-defines=Oculus.Interaction.OVR.Samples;
 --assembly-defines=Oculus.Platform;
 --assembly-defines=Oculus.VR;
+--assembly-defines=OpenAI.Runtime;
 --assembly-defines=System.Configuration;
 --assembly-defines=System.Core;
 --assembly-defines=System.Data;
@@ -72,6 +75,7 @@ Library: C:\Users\laura\Documents\XR-Bootcamp\LinguaSpace\Temp\BurstOutput\tempb
 --assembly-defines=Assembly-CSharp-firstpass;
 --assembly-defines=Assembly-CSharp;
 --assembly-defines=AssistantCoreSDKRuntime;
+--assembly-defines=DOTween;
 --assembly-defines=Meta.Voice.Samples.Dictation;
 --assembly-defines=Meta.VoiceSDK.Mic.Common;
 --assembly-defines=Meta.VoiceSDK.Mic.Other;
@@ -89,8 +93,10 @@ Library: C:\Users\laura\Documents\XR-Bootcamp\LinguaSpace\Temp\BurstOutput\tempb
 --assembly-defines=Newtonsoft.Json;
 --assembly-defines=Oculus.Interaction;
 --assembly-defines=Oculus.Interaction.OVR;
+--assembly-defines=Oculus.Interaction.OVR.Samples;
 --assembly-defines=Oculus.Platform;
 --assembly-defines=Oculus.VR;
+--assembly-defines=OpenAI.Runtime;
 --assembly-defines=System.Configuration;
 --assembly-defines=System.Core;
 --assembly-defines=System.Data;
