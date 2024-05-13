@@ -224,8 +224,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1d12111fcdc9de34eaa30678d0e0170e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  labelName: 
   _textLabel: {fileID: 3654206315823804003}
   _button: {fileID: 894604266938777808}
+  _highlightMaterial: {fileID: 2100000, guid: 447e4a09c59fc0148916a5f6393024dd, type: 2}
 --- !u!1 &4847555792090249797
 GameObject:
   m_ObjectHideFlags: 0

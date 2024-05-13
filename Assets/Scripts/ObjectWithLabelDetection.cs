@@ -44,6 +44,7 @@ public class ObjectWithLabelDetection : MonoBehaviour
 
             // Find label object in MRUK anchor
             var labelObject = parentObject.GetComponentInChildren<TranslateObject>();
+            labelObject.ObjectSelectionBoolFlag();
             if (!labelObject) continue;
 
             _appManager.SpeakTTS(labelObject.labelName);
