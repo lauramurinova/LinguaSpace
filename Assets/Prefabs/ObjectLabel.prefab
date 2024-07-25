@@ -960,7 +960,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.2, y: 1.2, z: 1.2}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1182878612811050602}
@@ -984,6 +984,7 @@ MonoBehaviour:
       m_Calls: []
   labelName: 
   _textLabel: {fileID: 3654206315823804003}
+  _highlightMaterial: {fileID: 2100000, guid: 447e4a09c59fc0148916a5f6393024dd, type: 2}
   _speakButton: {fileID: 510233338357194738}
   _labelButton: {fileID: 5360404112417308734}
   _listenButton: {fileID: 611636751272369484}
@@ -1958,8 +1959,8 @@ RectTransform:
   m_LocalScale: {x: 4.5, y: 4.5, z: 4.5}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 5565405988604962685}
   - {fileID: 7383515671967900092}
+  - {fileID: 5565405988604962685}
   - {fileID: 4766079685825066254}
   - {fileID: 7043017876514310941}
   - {fileID: 6626317267480417271}
@@ -2419,6 +2420,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
+      - m_Target: {fileID: 1796788482172879038}
+        m_TargetAssemblyTypeName: TranslateObject, Assembly-CSharp
+        m_MethodName: ObjectSelectionBoolFlag
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
   _whenUnhover:
     m_PersistentCalls:
       m_Calls:
@@ -2426,6 +2439,18 @@ MonoBehaviour:
         m_TargetAssemblyTypeName: TranslateObject, Assembly-CSharp
         m_MethodName: DisableAdjectiveButtons
         m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1796788482172879038}
+        m_TargetAssemblyTypeName: TranslateObject, Assembly-CSharp
+        m_MethodName: ObjectDeselectBoolFlag
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine

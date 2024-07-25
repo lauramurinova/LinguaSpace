@@ -12,7 +12,6 @@ public class TranslateObject : MonoBehaviour
     
     public string labelName;
     [SerializeField] private TextMeshProUGUI _textLabel;
-    [SerializeField] private Button _button;
     [SerializeField] private Material _highlightMaterial;
     
     private Renderer _renderer;
@@ -55,11 +54,17 @@ public class TranslateObject : MonoBehaviour
 
     private void Update()
     {
+        UpdateRenderer();
+        HandleAnimationUpdate();
+    }
+
+    private void UpdateRenderer()
+    {
         if (!_renderer || !_parentObject)
         {
             SetMaterialParams();
         }
-        
+
         if (_isTouchingObject)
         {
             SetMaterial(_renderer, _highlightMaterial );
@@ -68,7 +73,10 @@ public class TranslateObject : MonoBehaviour
         {
             SetMaterial(_renderer, _defaultMaterial);
         }
-        
+    }
+
+    private void HandleAnimationUpdate()
+    {
         if (_toggleAdjectives > 0)
         {
             _timer += Time.deltaTime;
@@ -81,6 +89,7 @@ public class TranslateObject : MonoBehaviour
                         foreach (var btn in _adjectiveButtons)
                         {
                             btn.GetComponent<Animator>().SetTrigger("Appear");
+                            _isTouchingObject = true;
                         }
                     }
                     else
@@ -88,6 +97,7 @@ public class TranslateObject : MonoBehaviour
                         foreach (var btn in _adjectiveButtons)
                         {
                             btn.GetComponent<Animator>().SetTrigger("Dissapear");
+                            _isTouchingObject = false;
                         }
                     }
                 }
@@ -213,14 +223,11 @@ public class TranslateObject : MonoBehaviour
         labelName = name;
 
     }
-
     
     public string GetLabel()
     {
         return _name;
     }
-
-    
 
     public void SetMaterial(Renderer renderer, Material mat)
     {
@@ -233,8 +240,6 @@ public class TranslateObject : MonoBehaviour
         SetMaterialParams();
         
     }
-    
-    
 
     private void SetMaterialParams()
     {
@@ -245,8 +250,13 @@ public class TranslateObject : MonoBehaviour
 
     public void ObjectSelectionBoolFlag()
     {
-        _isTouchingObject = true;
-        StartCoroutine(SetBoolFlagOff(2f, _isTouchingObject));
+        // _isTouchingObject = true;
+        // StartCoroutine(SetBoolFlagOff(2f, _isTouchingObject));
+    }
+
+    public void ObjectDeselectBoolFlag()
+    {
+        // _isTouchingObject = false;
     }
     private IEnumerator SetBoolFlagOff(float duration, bool boolToSetOff)
     {

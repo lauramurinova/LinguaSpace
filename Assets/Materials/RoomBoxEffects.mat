@@ -9,6 +9,8 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: RoomBoxEffects
   m_Shader: {fileID: 4800000, guid: f7a957024f8cfba47b11d3c17287900b, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
   m_InvalidKeywords: []
   m_LightmapFlags: 4
@@ -17,6 +19,7 @@ Material:
   m_CustomRenderQueue: -1
   stringTagMap: {}
   disabledShaderPasses: []
+  m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs: []
@@ -31,7 +34,7 @@ Material:
     - _StencilRef: 2
     m_Colors:
     - _CeilingColor: {r: 1, g: 0.7523585, b: 0.6462264, a: 1}
-    - _Color: {r: 0.1432894, g: 0.6900571, b: 0.8679245, a: 1}
+    - _Color: {r: 0.12626074, g: 0.70440245, b: 0.18119939, a: 1}
     - _EdgeColor: {r: 0.010130405, g: 1, b: 0, a: 1}
     - _EffectPosition: {r: 0, g: 1, b: 0, a: 1}
     - _FloorColor: {r: 0.3443396, g: 0.56641805, b: 1, a: 1}

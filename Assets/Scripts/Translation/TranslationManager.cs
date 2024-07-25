@@ -53,7 +53,26 @@ public class TranslationManager : MonoBehaviour
             }
 
             _rotationTimer += Time.deltaTime;
+            foreach (var translateObject in _translateObjects)
+            {
+                float distanceToPlayer = Vector3.Distance(translateObject.transform.position, _playerTrackingObj.position);
+                float scaleFactor = Mathf.Lerp(1f, 1.35f, Mathf.Clamp01(distanceToPlayer / 2f));
+
+                translateObject.transform.localScale = new Vector3(scaleFactor, scaleFactor, scaleFactor);
+            }
         }
+        
+        // foreach (var translateObject in _translateObjects)
+        // {
+        //     if (Vector3.Distance(translateObject.transform.position, _playerTrackingObj.position) > 2f)
+        //     {
+        //         translateObject.transform.localScale = new Vector3(1.7f, 1.7f, 1.7f);
+        //     }
+        //     else
+        //     {
+        //         translateObject.transform.localScale = new Vector3(1f, 1f, 1f);
+        //     }
+        // }
     }
     
     /// <summary>
