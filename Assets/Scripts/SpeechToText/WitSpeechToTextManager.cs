@@ -2,34 +2,43 @@ using System;
 using Oculus.Voice;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 public class WitSpeechToTextManager : SpeechToTextManager
 {
     [SerializeField] private AppVoiceExperience _appVoice;
     [SerializeField] private TextMeshProUGUI _voiceText;
-    [SerializeField] private Button _voiceButton;
+    [SerializeField] private GameObject _voiceButtonBorder;
 
-    [Header("UI")] 
-    [SerializeField] private Color _microphoneDisabledColor = Color.red;
-    [SerializeField] private Color _microphoneEnabledColor = Color.green;
-    [SerializeField] private TextMeshProUGUI _listeningText;
-
-    private void Awake()
-    {
-        _appVoice.VoiceEvents.OnFullTranscription.AddListener((transcription) =>
-        {
-            _voiceText.text = transcription;
-            _appVoice.Deactivate();
-            _voiceButton.GetComponent<Image>().color = _microphoneDisabledColor;
-            _listeningText.gameObject.SetActive(false);
-        });
-    }
-
-    public override void StartRecording()
+    public override void StartRecording(string textToRecognize)
     {
         _appVoice.Activate();
-        _voiceButton.GetComponent<Image>().color = _microphoneEnabledColor;
-        _listeningText.gameObject.SetActive(true);
+        _voiceButtonBorder.SetActive(true);
+        _appVoice.VoiceEvents.OnFullTranscription.AddListener(transcription =>
+        {
+            HandleSpeechRecognitionResponse(textToRecognize, transcription);
+            _appVoice.Deactivate();
+            _voiceButtonBorder.SetActive(false);
+            _appVoice.VoiceEvents.OnFullTranscription.RemoveAllListeners();
+        });
+    }
+    
+    private void HandleSpeechRecognitionResponse(string textToRecognize, string recognizedText)
+    {
+        _voiceText.text = AppManager.Instance.CapitalizeFirstLetter(recognizedText);
+        
+        if(textToRecognize == "") return;
+        
+        // user got it right
+        if (textToRecognize.Replace("-", "").Replace(" ", "").ToLower() == recognizedText.Replace("-", "").Replace(" ", "").ToLower())
+        {
+            AppManager.Instance.GivePositiveFeedbackToUser();
+        }
+        // user didnt get it right
+        else
+        {
+            AppManager.Instance.GiveNegativeFeedbackToUser();
+        }
     }
 }

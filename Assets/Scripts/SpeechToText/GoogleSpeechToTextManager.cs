@@ -3,6 +3,7 @@ using System.Collections;
 using Newtonsoft.Json.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 
@@ -12,11 +13,8 @@ public class GoogleSpeechToTextManager : SpeechToTextManager
     [SerializeField] private int _recordingDuration = 2;
     
     [Header("UI")]
-    [SerializeField] private Image _recordButtonImage;
+    [SerializeField] private GameObject _voiceButtonBorder;
     [SerializeField] private TextMeshProUGUI _translatedTextUI;
-    [SerializeField] private Color _microphoneDisabledColor = Color.red;
-    [SerializeField] private Color _microphoneEnabledColor = Color.green;
-    [SerializeField] private TextMeshProUGUI _listeningText;
 
     // Google Speech To Text url
     private const string SpeechToTextUrl = "https://speech.googleapis.com/v1/speech:recognize?key=";
@@ -28,17 +26,17 @@ public class GoogleSpeechToTextManager : SpeechToTextManager
     /// <summary>
     /// Starts speech recognition.
     /// </summary>
-    public override void StartRecording()
+    public override void StartRecording(string textToRecognize)
     {
         if (_recordingCoroutine != null) return;
         
-        _recordingCoroutine = StartCoroutine(RecordAndRecognizeSpeech());
+        _recordingCoroutine = StartCoroutine(RecordAndRecognizeSpeech(textToRecognize));
     }
 
     /// <summary>
     /// Handles activating the microphone and starting the speech recognition (through sending REST API to Google)
     /// </summary>
-    private IEnumerator RecordAndRecognizeSpeech()
+    private IEnumerator RecordAndRecognizeSpeech(string textToRecognize)
     {
         var audioClip = ActivateMicrophone();
 
@@ -48,7 +46,7 @@ public class GoogleSpeechToTextManager : SpeechToTextManager
         
         Action<string> action = (recognizedText) =>
         {
-            _translatedTextUI.text = recognizedText;
+            HandleSpeechRecognitionResponse(textToRecognize, recognizedText);
         };
 
         if (_speechRecognitionCoroutine == null)
@@ -59,13 +57,30 @@ public class GoogleSpeechToTextManager : SpeechToTextManager
         _recordingCoroutine = null;
     }
 
+    private void HandleSpeechRecognitionResponse(string textToRecognize, string recognizedText)
+    {
+        _translatedTextUI.text = AppManager.Instance.CapitalizeFirstLetter(recognizedText);
+        
+        if(textToRecognize == "") return;
+        
+        // user got it right
+        if (textToRecognize.Replace("-", "").Replace(" ", "").ToLower() == recognizedText.Replace("-", "").Replace(" ", "").ToLower())
+        {
+            AppManager.Instance.GivePositiveFeedbackToUser();
+        }
+        // user didnt get it right
+        else
+        {
+            AppManager.Instance.GiveNegativeFeedbackToUser();
+        }
+    }
+
     /// <summary>
     /// Activates the microphone for listening.
     /// </summary>
     private AudioClip ActivateMicrophone()
     {
-        _recordButtonImage.color = _microphoneEnabledColor;
-        _listeningText.gameObject.SetActive(true);
+        _voiceButtonBorder.SetActive(true);
         return Microphone.Start(null, false, _recordingDuration, 44100);
     }
 
@@ -75,8 +90,7 @@ public class GoogleSpeechToTextManager : SpeechToTextManager
     private void DeactivateMicrophone()
     {
         Microphone.End(null);
-        _recordButtonImage.color = _microphoneDisabledColor;
-        _listeningText.gameObject.SetActive(false);
+        _voiceButtonBorder.SetActive(false);
     }
 
     /// <summary>

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Meta.XR.MRUtilityKit;
@@ -13,11 +14,67 @@ public class TranslationManager : MonoBehaviour
     [SerializeField] private MRUK _mruk;
     [SerializeField] private MRUKAnchor.SceneLabels _sceneLabelsToShow;
     [SerializeField] private GameObject _labelPrefab;
+    [SerializeField] private WordSuggesterHelper _wordSuggesterHelper;
+    [SerializeField] private Transform _playerTrackingObj;
+
+    [Header("UI")] 
+    [SerializeField] private TextMeshProUGUI _lastSelectedWordText;
+    [SerializeField] private GameObject _noSelectedWord;
+    [SerializeField] private GameObject _selectedWord;
 
     private List<TranslateObject> _translateObjects = new List<TranslateObject>();
+    private Vector3 _lastUsersPosition;
+    private float _rotationTimer = 0f;
 
     private string _translationApiUrl = "https://translation.googleapis.com/language/translate/v2?key=";
 
+    private void Start()
+    {
+        _lastUsersPosition = _playerTrackingObj.position;
+    }
+
+    void Update()
+    {
+        // rotate labels based on users position - smoothly
+        if (Vector3.Distance(_lastUsersPosition, _playerTrackingObj.position) > 0.5f)
+        {
+            foreach (var translateObject in _translateObjects)
+            {
+                Vector3 directionToTarget = _playerTrackingObj.position - translateObject.transform.position;
+                Quaternion targetRotation = Quaternion.LookRotation(directionToTarget);
+                translateObject.transform.rotation = Quaternion.Lerp(translateObject.transform.rotation, targetRotation,
+                    3f * Time.deltaTime);
+            }
+
+            if (_rotationTimer > 3f)
+            {
+                _lastUsersPosition = _playerTrackingObj.position;
+                _rotationTimer = 0f;
+            }
+
+            _rotationTimer += Time.deltaTime;
+            foreach (var translateObject in _translateObjects)
+            {
+                float distanceToPlayer = Vector3.Distance(translateObject.transform.position, _playerTrackingObj.position);
+                float scaleFactor = Mathf.Lerp(1f, 1.35f, Mathf.Clamp01(distanceToPlayer / 2f));
+
+                translateObject.transform.localScale = new Vector3(scaleFactor, scaleFactor, scaleFactor);
+            }
+        }
+        
+        // foreach (var translateObject in _translateObjects)
+        // {
+        //     if (Vector3.Distance(translateObject.transform.position, _playerTrackingObj.position) > 2f)
+        //     {
+        //         translateObject.transform.localScale = new Vector3(1.7f, 1.7f, 1.7f);
+        //     }
+        //     else
+        //     {
+        //         translateObject.transform.localScale = new Vector3(1f, 1f, 1f);
+        //     }
+        // }
+    }
+    
     /// <summary>
     /// Loads all objects label within the current room.
     /// Called by MRUK on scene loaded event.
@@ -31,9 +88,22 @@ public class TranslationManager : MonoBehaviour
             if(!_sceneLabelsToShow.ToString().Contains(anchor.GetLabelsAsEnum().ToString())) continue;
             
             var labelObject = Instantiate(_labelPrefab, anchor.transform).GetComponent<TranslateObject>();
-            labelObject.Initiate(GetAnchorLabel(anchor));
+            labelObject.Initiate(GetAnchorLabel(anchor), _wordSuggesterHelper);
+            labelObject.selectedObject.AddListener(ChangeLastSelectedObject);
             _translateObjects.Add(labelObject);
         }
+    }
+
+    private void ChangeLastSelectedObject(TranslateObject translateObject)
+    {
+        _lastSelectedWordText.text = AppManager.Instance.CapitalizeFirstLetter(translateObject.GetLastSelectedWord());
+        _noSelectedWord.SetActive(false);
+        _selectedWord.SetActive(true);
+    }
+
+    public string GetSelectedObjectName()
+    {
+        return _lastSelectedWordText.text;
     }
 
     /// <summary>
@@ -45,21 +115,36 @@ public class TranslationManager : MonoBehaviour
         foreach (var translateObject in _translateObjects)
         {
             var translateEvent = new UnityEvent<string>();
-            StartCoroutine(TranslateText(translateEvent, translateObject.GetLabel(),
-                AppManager.Instance.GetCurrentLanguage(), desiredLanguage));
+            TranslateText(translateEvent, translateObject.GetLabel(), AppManager.Instance.GetCurrentLanguage(), desiredLanguage);
             translateEvent.AddListener(translatedText =>
             {
                 translateObject.ChangeLabel(translatedText);
                 translateEvent.RemoveAllListeners();
             });
         }
+        
+        var translateEvent2 = new UnityEvent<string>();
+        TranslateText(translateEvent2, GetSelectedObjectName(), AppManager.Instance.GetCurrentLanguage(), desiredLanguage);
+        translateEvent2.AddListener(translatedText =>
+        {
+            _lastSelectedWordText.text = AppManager.Instance.CapitalizeFirstLetter(translatedText);
+        });
+    }
+
+    /// <summary>
+    /// Translates the given text to a given desired language.
+    /// Response is sent through Unity Event in a string.
+    /// </summary>
+    public void TranslateText(UnityEvent<string> translateEvent, string text, Languages originLanguage, Languages desiredLanguage)
+    {
+        StartCoroutine(TranslateTextCor(translateEvent, text, originLanguage, desiredLanguage));
     }
 
     /// <summary>
     /// Handles sending REST API to Googles Translation API based on the text provided and original language and desired language enum.
     /// On finishing the translation, it invokes the translate event.
     /// </summary>
-    public IEnumerator TranslateText(UnityEvent<string> translateEvent, string textToTranslate, Languages originLanguage, Languages desiredLanguage)
+    private IEnumerator TranslateTextCor(UnityEvent<string> translateEvent, string textToTranslate, Languages originLanguage, Languages desiredLanguage)
     {
         string url =  _translationApiUrl + GetApiKey();
         string jsonRequestBody = "{\"q\":\"" + textToTranslate + "\",\"source\":\"" + originLanguage + "\",\"target\":\"" + desiredLanguage + "\"}";
