@@ -20,14 +20,14 @@ public class WordSuggesterAgent : MonoBehaviour
     };
     private string GetApiKey()
     {
-        return Resources.Load<TextAsset>("Security/OpenAI-APIKey").ToString();
+        return Resources.Load<TextAsset>("Security/OpenAI_APIKey").ToString();
     }
     public void Start()
     {
         var openAIKey = GetApiKey();
         if (openAIKey.Length == 0)
         {
-            throw new SystemException("Open AI Api key file not found in project: Resources/Security/OpenAI-APIKey.txt");
+            throw new SystemException("Open AI Api key file not found in project: Resources/Security/OpenAI_APIKey.txt");
         }
         openai = new OpenAIApi(openAIKey);
         if (openai == null)
@@ -73,7 +73,7 @@ public class WordSuggesterAgent : MonoBehaviour
         // Complete the instruction
         var completionResponse = await openai.CreateChatCompletion(new CreateChatCompletionRequest()
         {
-            Model = "gpt-3.5-turbo",
+            Model = "gpt-4o-mini",
             Messages = newMessages
         });
 
